@@ -4,13 +4,21 @@
 
     <groupId>nl.future-edge.docker</groupId>
     <artifactId>docker</artifactId>
-    <packaging>pom</packaging>
     <version>0.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <name>Docker - Modules</name>
     <description>Docker utilities that simplify working with docker</description>
     <url>https://github.com/willemsrb/docker</url>
     <inceptionYear>2017</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <issueManagement>
         <url>https://github.com/willemsrb/docker/issues</url>
@@ -20,12 +28,6 @@
         <url>https://travis-ci.org/willemsrb/docker</url>
     </ciManagement>
 
-    <scm>
-        <url>https://github.com/willemsrb/docker</url>
-        <connection>scm:git:https://github.com/willemsrb/docker.git</connection>
-        <tag>HEAD</tag>
-    </scm>
-
     <developers>
         <developer>
             <name>Robert Willems of Brilman</name>
@@ -33,6 +35,12 @@
             <id>willemsrb</id>
         </developer>
     </developers>
+
+    <scm>
+        <url>https://github.com/willemsrb/docker</url>
+        <connection>scm:git:https://github.com/willemsrb/docker.git</connection>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <jdk.version>1.8</jdk.version>
