@@ -1,0 +1,24 @@
+{
+  "imageRegistry": "${docker.registry}",
+  "imageName": "alpine",
+  "imageTag": "${docker.image.version}",
+  "runOptions": "--log-driver json-file --log-opt max-size=1m --log-opt max-file=5 -e ALPINE_2_HOST=${alpine-2.name} -e ALPINE_3_HOST=${alpine-3.name}",
+  "command": "top",
+  "containerNameProperty": "alpine-1.name",
+  "ports": [
+    {
+      "port": "80/tcp",
+      "external": "80",
+      "property": "alpine-1.port.http"
+    },
+    {
+      "port": "82/tcp",
+      "external": "82",
+      "property": "alpine-1.port.test"
+    }
+  ],
+  "dependsOn": [
+    "alpine-2",
+    "alpine-3"
+  ]
+}

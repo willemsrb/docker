@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>nl.future-edge.docker</groupId>
+        <artifactId>docker-maven-plugin-it</artifactId>
+        <version>0.9-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>docker-maven-plugin-it-project</artifactId>
+    <name>Docker - Maven Plugin - Integration Test - Project</name>
+
+    <properties>
+        <docker.configuration>alpine</docker.configuration>
+        <docker.registry/>
+        <docker.image.version>3.5</docker.image.version>
+        <docker.properties>${project.build.directory}/port.properties</docker.properties>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <systemPropertiesFile>${docker.properties}</systemPropertiesFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>nl.future-edge.docker</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>nl.future-edge.docker</groupId>
+                        <artifactId>docker-maven-plugin-it-configuration</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>setup</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>create-network</goal>
+                            <goal>run-configuration</goal>
+                            <goal>echo-properties</goal>
+                            <goal>write-properties</goal>
+                        </goals>
+                        <configuration>
+                            <configurationName>${docker.configuration}</configurationName>
+                            <networkNameProperty>docker.network</networkNameProperty>
+                            <networkName>${docker.network}</networkName>
+                            <randomPorts>true</randomPorts>
+                            <target>${docker.properties}</target>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>list-running</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>command</goal>
+                        </goals>
+                        <configuration>
+                            <command>ps -a</command>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>remove-network</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>remove-network</goal>
+                        </goals>
+                        <configuration>
+                            <networkName>${docker.network}</networkName>
+                            <stopContainers>true</stopContainers>
+                            <removeContainers>true</removeContainers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

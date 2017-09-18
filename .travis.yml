@@ -1,0 +1,36 @@
+sudo: required
+
+services:
+  - docker
+
+install: true
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+
+language: java
+
+jdk:
+  - oraclejdk8
+
+addons:
+  sonarqube: true
+
+script:
+  - openssl aes-256-cbc -k $GPG_PASSPHRASE -in codesigning.asc.enc -out codesigning.asc -d
+  - gpg --fast-import codesigning.asc
+  - mvn --settings settings.xml clean org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=$SONAR_ORGANIZATION -Dgpg.passphrase=$GPG_PASSPHRASE
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file_glob: true
+  file:
+    - 'support/target/docker-support-*.jar'
+    - 'support/target/docker-support-*.asc'
+    - 'maven-plugin/target/docker-maven-plugin-*.jar'
+    - 'maven-plugin/target/docker-maven-plugin-*.asc'
+  skip_cleanup: true
+  on:
+    tags: true
