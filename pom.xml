@@ -4,7 +4,7 @@
 
     <groupId>nl.future-edge.docker</groupId>
     <artifactId>docker</artifactId>
-    <version>0.2.1</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Docker - Modules</name>
@@ -39,7 +39,7 @@
     <scm>
         <url>https://github.com/willemsrb/docker</url>
         <connection>scm:git:https://github.com/willemsrb/docker.git</connection>
-        <tag>docker-0.2.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
