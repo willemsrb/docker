@@ -210,12 +210,14 @@ public class RunConfigurationExecutable extends DockerExecutable {
             }
 
             // Add port mappings
-            for (final Configuration.Port port : configuration.getPorts()) {
-                runOptions.append(" -p ");
-                if (!settings.isRandomPorts() && port.getExternal() != null && !"".equals(port.getExternal().trim())) {
-                    runOptions.append(port.getExternal()).append(":");
+            if (configuration.getPorts() != null) {
+                for (final Configuration.Port port : configuration.getPorts()) {
+                    runOptions.append(" -p ");
+                    if (!settings.isRandomPorts() && port.getExternal() != null && !"".equals(port.getExternal().trim())) {
+                        runOptions.append(port.getExternal()).append(":");
+                    }
+                    runOptions.append(port.getPort());
                 }
-                runOptions.append(port.getPort());
             }
 
             return StrSubstitutor.replace(runOptions.toString(), settings.getProjectProperties());

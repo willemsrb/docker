@@ -61,7 +61,7 @@ public final class RunExecutable extends DockerExecutable {
         arguments.add(image);
 
         if (command != null && !"".equals(command)) {
-            arguments.add(command);
+            arguments.addAll(Docker.splitOptions(command));
         }
 
         final List<String> executionResult = executor.execute(arguments, false, true);
