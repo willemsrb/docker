@@ -80,6 +80,17 @@
                     </execution>
 
                     <execution>
+                        <id>ping-3-from-1</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>command</goal>
+                        </goals>
+                        <configuration>
+                            <command>exec ${alpine-1.name} ping -w 10 alpine-3</command>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>remove-network</id>
                         <phase>post-integration-test</phase>
                         <goals>

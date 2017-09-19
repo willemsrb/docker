@@ -33,17 +33,17 @@ public final class RunExecutable extends DockerExecutable {
 
     @Override
     public void execute() throws DockerExecutionException {
-        debug("Run configuration: ");
+        info("Run configuration: ");
         debug("- projectProperties: " + projectProperties);
         debug("- runOptions: " + runOptions);
-        debug("- image: " + image);
+        info("- image: " + image);
         debug("- command: " + command);
         debug("- containerIdProperty: " + containerIdProperty);
 
         // Execute
         final DockerExecutor executor = createDockerExecutor();
         containerId = doIgnoringFailure(() -> runContainer(executor, runOptions, image, command));
-        debug("ContainerId: " + containerId);
+        info("ContainerId: " + containerId);
 
         // Set property in maven
         if (containerIdProperty != null && !"".equals(containerIdProperty.trim())) {

@@ -30,6 +30,12 @@ public final class InspectContainerMojo extends AbstractDockerMojo implements In
     private String containerNameProperty;
 
     /**
+     * Property name to store the host name.
+     */
+    @Parameter(name = "hostnameProperty", property = "docker.hostnameProperty")
+    private String hostnameProperty;
+
+    /**
      * Properties to store mapped ports in (should be in the form of &lt;port>=&lt;property>,&lt;port>=&lt;property>).
      */
     @Parameter(name = "portPropertiesAsString", property = "docker.portProperties")
@@ -54,6 +60,11 @@ public final class InspectContainerMojo extends AbstractDockerMojo implements In
     @Override
     public String getContainerNameProperty() {
         return containerNameProperty;
+    }
+
+    @Override
+    public String getHostnameProperty() {
+        return hostnameProperty;
     }
 
     @Override

@@ -16,6 +16,7 @@ public final class InspectContainerExecutable extends DockerExecutable {
     private final Properties projectProperties;
     private final String containerId;
     private final String containerNameProperty;
+    private final String hostnameProperty;
     private final Properties portProperties;
 
     public InspectContainerExecutable(final InspectContainerSettings settings) {
@@ -24,15 +25,17 @@ public final class InspectContainerExecutable extends DockerExecutable {
         this.projectProperties = settings.getProjectProperties();
         this.containerId = settings.getContainerId();
         this.containerNameProperty = settings.getContainerNameProperty();
+        this.hostnameProperty = settings.getHostnameProperty();
         this.portProperties = settings.getPortProperties();
     }
 
     public void execute() throws DockerExecutionException {
-        debug("Inspect container configuration: ");
+        info("Inspect container configuration: ");
         debug("- projectProperties: " + projectProperties);
-        debug("- containerId: " + containerId);
-        debug("- containerNameProperty: " + containerNameProperty);
-        debug("- portProperties: " + portProperties);
+        info("- containerId: " + containerId);
+        info("- containerNameProperty: " + containerNameProperty);
+        info("- hostnameProperty: " + hostnameProperty);
+        info("- portProperties: " + portProperties);
 
         final DockerExecutor executor = createDockerExecutor();
         final String containerInfoJson = doIgnoringFailure(() -> inspectContainer(executor, containerId));
@@ -42,16 +45,19 @@ public final class InspectContainerExecutable extends DockerExecutable {
         final JsonObject containerInfo = containerInfos.get(0).getAsJsonObject();
 
         handleContainerName(containerInfo);
+        handleHostname(containerInfo);
         handlePorts(containerInfo);
     }
 
     private void handleContainerName(final JsonObject containerInfo) {
         if (containerNameProperty == null || "".equals(containerNameProperty.trim())) {
+            debug("Skipping container name as no property is set");
             return;
         }
 
         final JsonPrimitive name = containerInfo.getAsJsonPrimitive("Name");
         if (name == null) {
+            warn("Name: Name primitive not found");
             return;
         }
 
@@ -59,25 +65,50 @@ public final class InspectContainerExecutable extends DockerExecutable {
         if (containerName.startsWith("/")) {
             containerName = containerName.substring(1);
         }
-        debug("Name: " + containerName);
+        info("Name: " + containerName);
         projectProperties.setProperty(containerNameProperty, containerName);
     }
 
+    private void handleHostname(final JsonObject containerInfo) {
+        if (hostnameProperty == null || "".equals(hostnameProperty.trim())) {
+            debug("Skipping hostname as no property is set");
+            return;
+        }
+
+        final JsonObject config = containerInfo.getAsJsonObject("Config");
+        if (config == null) {
+            warn("Hostname: Config object not found");
+            return;
+        }
+        final JsonPrimitive hostname = config.getAsJsonPrimitive("Hostname");
+        if (hostname == null) {
+            warn("Hostname: Hostname primitive not found");
+            return;
+        }
+
+        info("Hostname: " + hostname.getAsString());
+        projectProperties.setProperty(hostnameProperty, hostname.getAsString());
+    }
+
+
     private void handlePorts(JsonObject containerInfo) {
         if (portProperties == null || portProperties.isEmpty()) {
+            debug("Skipping port as no property is set");
             return;
         }
 
         final JsonObject networkSettings = containerInfo.getAsJsonObject("NetworkSettings");
         if (networkSettings == null) {
+            warn("Ports: NetworkSettings object not found");
             return;
         }
         final JsonObject ports = networkSettings.getAsJsonObject("Ports");
         if (ports == null) {
+            warn("Ports: Ports object not found");
             return;
         }
 
-        for (String portPropertyKey : portProperties.stringPropertyNames()) {
+        for (final String portPropertyKey : portProperties.stringPropertyNames()) {
             final JsonArray mappings = ports.getAsJsonArray(portPropertyKey);
             if (mappings == null || mappings.size() == 0) {
                 warn("Port " + portPropertyKey + ": not mapped");
@@ -87,7 +118,7 @@ public final class InspectContainerExecutable extends DockerExecutable {
                 }
                 final JsonObject mapping = mappings.get(0).getAsJsonObject();
                 final JsonPrimitive port = mapping.getAsJsonPrimitive("HostPort");
-                debug("Port " + portPropertyKey + ": " + port.getAsString());
+                info("Port " + portPropertyKey + ": " + port.getAsString());
                 projectProperties.setProperty(portProperties.getProperty(portPropertyKey), port.getAsString());
             }
         }

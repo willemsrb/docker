@@ -10,5 +10,7 @@ public interface InspectContainerSettings extends DockerSettings {
 
     String getContainerNameProperty();
 
+    String getHostnameProperty();
+
     Properties getPortProperties();
 }

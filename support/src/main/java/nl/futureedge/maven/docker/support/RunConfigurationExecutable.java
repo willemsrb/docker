@@ -270,6 +270,11 @@ public class RunConfigurationExecutable extends DockerExecutable {
         }
 
         @Override
+        public String getHostnameProperty() {
+            return configuration.getHostnameProperty();
+        }
+
+        @Override
         public final Properties getPortProperties() {
             final Properties result = new Properties();
             for (final Configuration.Port port : configuration.getPorts()) {

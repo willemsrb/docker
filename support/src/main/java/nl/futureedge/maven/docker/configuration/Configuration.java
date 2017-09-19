@@ -13,6 +13,7 @@ public class Configuration {
 
     private String containerIdProperty;
     private String containerNameProperty;
+    private String hostnameProperty;
 
     private List<Port> ports;
 
@@ -44,6 +45,10 @@ public class Configuration {
 
     public String getContainerNameProperty() {
         return containerNameProperty;
+    }
+
+    public String getHostnameProperty() {
+        return hostnameProperty;
     }
 
     public List<Port> getPorts() {
