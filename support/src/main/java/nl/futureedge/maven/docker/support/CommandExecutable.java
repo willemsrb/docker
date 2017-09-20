@@ -1,7 +1,7 @@
 package nl.futureedge.maven.docker.support;
 
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.executor.Docker;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
 /**
@@ -17,7 +17,7 @@ public final class CommandExecutable extends DockerExecutable {
         this.command = settings.getCommand();
     }
 
-    public void execute() throws DockerExecutionException {
+    public void execute() throws DockerException {
         debug("Command configuration: ");
         debug("- command: " + command);
 
@@ -25,7 +25,7 @@ public final class CommandExecutable extends DockerExecutable {
         doIgnoringFailure(() -> execute(executor));
     }
 
-    private void execute(final DockerExecutor executor) throws DockerExecutionException {
+    private void execute(final DockerExecutor executor) throws DockerException {
         executor.execute(Docker.splitOptions(command), true, false);
     }
 }

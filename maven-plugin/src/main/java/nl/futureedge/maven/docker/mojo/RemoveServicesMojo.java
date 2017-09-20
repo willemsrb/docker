@@ -1,6 +1,6 @@
 package nl.futureedge.maven.docker.mojo;
 
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.RemoveServicesExecutable;
 import nl.futureedge.maven.docker.support.RemoveServicesSettings;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -24,7 +24,7 @@ public final class RemoveServicesMojo extends AbstractDockerMojo implements Remo
     }
 
     @Override
-    protected void executeInternal() throws DockerExecutionException {
+    protected void executeInternal() throws DockerException {
         new RemoveServicesExecutable(this).execute();
     }
 

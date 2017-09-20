@@ -1,6 +1,6 @@
 package nl.futureedge.maven.docker.mojo;
 
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.RemoveContainersExecutable;
 import nl.futureedge.maven.docker.support.RemoveContainersSettings;
 import nl.futureedge.maven.docker.support.RemoveNetworkExecutable;
@@ -45,7 +45,7 @@ public final class RemoveNetworkMojo extends AbstractDockerMojo implements Remov
     }
 
     @Override
-    protected void executeInternal() throws DockerExecutionException {
+    protected void executeInternal() throws DockerException {
         if (stopContainers) {
             new StopContainersExecutable(this).execute();
         }

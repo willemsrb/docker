@@ -1,8 +1,9 @@
 package nl.futureedge.maven.docker.mojo;
 
 import java.util.Properties;
+import nl.futureedge.maven.docker.exception.DockerException;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.Docker;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
 import nl.futureedge.maven.docker.support.InspectContainerExecutable;
 import nl.futureedge.maven.docker.support.InspectContainerSettings;
 import nl.futureedge.maven.docker.support.RunExecutable;
@@ -25,6 +26,12 @@ public final class RunMojo extends AbstractDockerMojo implements RunSettings, In
      */
     @Parameter(name = "runOptions", property = "docker.runOptions")
     private String runOptions;
+
+    /**
+     * Should this container be run as a daemon?
+     */
+    @Parameter(name = "daemon", property = "docker.daemon", defaultValue = "true")
+    private boolean daemon;
 
     /**
      * Image to run (should contain complete image identifier including registry and version; else use the imageRegistry, imageName and imageTag arguments).
@@ -97,6 +104,11 @@ public final class RunMojo extends AbstractDockerMojo implements RunSettings, In
     }
 
     @Override
+    public boolean isDaemon() {
+        return daemon;
+    }
+
+    @Override
     public String getImage() {
         if (image == null || "".equals(image.trim())) {
             return Docker.getImage(imageRegistry, imageName, imageTag);
@@ -136,7 +148,7 @@ public final class RunMojo extends AbstractDockerMojo implements RunSettings, In
     }
 
     @Override
-    protected void executeInternal() throws DockerExecutionException {
+    protected void executeInternal() throws DockerException {
         if (getImage() == null || "".equals(getImage().trim())) {
             throw new DockerExecutionException("No image (user attribute image or attributes imageRegistry, imageName and imageTag configured to run");
         }

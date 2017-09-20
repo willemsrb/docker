@@ -1,13 +1,14 @@
 package nl.futureedge.maven.docker.support;
 
 import java.util.List;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.executor.DockerCommands;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
+
 
 public final class RemoveContainersExecutable extends DockerExecutable {
 
-   private final String filter;
+    private final String filter;
 
     public RemoveContainersExecutable(final RemoveContainersSettings settings) {
         super(settings);
@@ -16,7 +17,7 @@ public final class RemoveContainersExecutable extends DockerExecutable {
     }
 
     @Override
-    public void execute() throws DockerExecutionException {
+    public void execute() throws DockerException {
         debug("Remove containers configuration: ");
         debug("- filter: " + filter);
 

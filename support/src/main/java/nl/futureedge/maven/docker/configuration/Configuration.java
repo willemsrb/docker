@@ -4,11 +4,13 @@ import java.util.List;
 
 public class Configuration {
 
+
     private String imageRegistry;
     private String imageName;
     private String imageTag;
 
     private String runOptions;
+    private boolean daemon = true;
     private String command;
 
     private String containerIdProperty;
@@ -18,6 +20,7 @@ public class Configuration {
     private List<Port> ports;
 
     private List<String> dependsOn;
+
 
     public String getImageRegistry() {
         return imageRegistry;
@@ -33,6 +36,10 @@ public class Configuration {
 
     public String getRunOptions() {
         return runOptions;
+    }
+
+    public boolean isDaemon() {
+        return daemon;
     }
 
     public String getCommand() {

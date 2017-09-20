@@ -2,6 +2,7 @@ package nl.futureedge.maven.docker.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 
 /**
  * Docker commands.

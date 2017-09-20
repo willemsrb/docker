@@ -1,0 +1,8 @@
+{
+  "imageRegistry": "${docker.registry}",
+  "imageName": "alpine",
+  "imageTag": "${docker.image.version}",
+  "daemon": "false",
+  "command": "ping -w 3 alpine-3",
+  "dependsOn": []
+}

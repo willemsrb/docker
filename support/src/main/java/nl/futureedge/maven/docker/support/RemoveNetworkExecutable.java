@@ -2,7 +2,7 @@ package nl.futureedge.maven.docker.support;
 
 import java.util.ArrayList;
 import java.util.List;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
 public final class RemoveNetworkExecutable extends DockerExecutable {
@@ -16,7 +16,7 @@ public final class RemoveNetworkExecutable extends DockerExecutable {
     }
 
     @Override
-    public void execute() throws DockerExecutionException {
+    public void execute() throws DockerException {
         debug("Remove network configuration: ");
         debug("- networkName: " + networkName);
 
@@ -24,7 +24,7 @@ public final class RemoveNetworkExecutable extends DockerExecutable {
         doIgnoringFailure(() -> createNetwork(executor));
     }
 
-    private void createNetwork(final DockerExecutor executor) throws DockerExecutionException {
+    private void createNetwork(final DockerExecutor executor) throws DockerException {
         final List<String> arguments = new ArrayList<>();
         arguments.add("network");
         arguments.add("rm");

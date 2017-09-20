@@ -2,7 +2,7 @@ package nl.futureedge.maven.docker.mojo;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.DockerSettings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -71,10 +71,10 @@ public abstract class AbstractDockerMojo extends AbstractMojo implements DockerS
 
         try {
             executeInternal();
-        } catch (DockerExecutionException e) {
+        } catch (DockerException e) {
             throw new MojoExecutionException("Docker command failed", e);
         }
     }
 
-    protected abstract void executeInternal() throws DockerExecutionException;
+    protected abstract void executeInternal() throws DockerException;
 }

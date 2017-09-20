@@ -1,11 +1,11 @@
-package nl.futureedge.maven.docker.executor;
+package nl.futureedge.maven.docker.exception;
 
 import java.io.IOException;
 
 /**
  * Docker execution exception.
  */
-public final class DockerExecutionException extends Exception {
+public final class DockerExecutionException extends DockerException {
     private static final long serialVersionUID = 1L;
 
     /**

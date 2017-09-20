@@ -2,7 +2,7 @@ package nl.futureedge.maven.docker.mojo;
 
 
 import java.util.Properties;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.RunConfigurationExecutable;
 import nl.futureedge.maven.docker.support.RunConfigurationSettings;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -42,6 +42,13 @@ public final class RunConfigurationMojo extends AbstractDockerMojo implements Ru
     @Parameter(name = "randomPorts", property = "docker.randomPorts", defaultValue = "false")
     private boolean randomPorts;
 
+    /**
+     * Should the dependencies (dependsOn) of this configuration be skipped?
+     */
+    @Parameter(name = "skipDependencies", property = "docker.skipDependencies", defaultValue = "false")
+    private boolean skipDependencies;
+
+
     @Override
     public Properties getProjectProperties() {
         return project.getProperties();
@@ -63,7 +70,12 @@ public final class RunConfigurationMojo extends AbstractDockerMojo implements Ru
     }
 
     @Override
-    protected void executeInternal() throws DockerExecutionException {
+    public boolean isSkipDependencies() {
+        return skipDependencies;
+    }
+
+    @Override
+    protected void executeInternal() throws DockerException {
         // Load properties
         for (final String propertyName : configurationProperties.stringPropertyNames()) {
             project.getProperties().setProperty(propertyName, configurationProperties.getProperty(propertyName));

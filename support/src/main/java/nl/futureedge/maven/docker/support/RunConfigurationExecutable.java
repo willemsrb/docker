@@ -1,11 +1,5 @@
 package nl.futureedge.maven.docker.support;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
@@ -13,20 +7,19 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import nl.futureedge.maven.docker.configuration.Configuration;
+import nl.futureedge.maven.docker.configuration.ConfigurationLoader;
+import nl.futureedge.maven.docker.exception.DockerException;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.Docker;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
 import org.apache.commons.text.StrSubstitutor;
 
 public class RunConfigurationExecutable extends DockerExecutable {
-
-    public static final String RESOURCE_BASE = "META-INF/docker/configuration/";
 
     private final RunConfigurationSettings settings;
     private Set<String> loaded;
     private Stack<String> stack;
     private final String configurationName;
-
-    private static final Gson GSON = new GsonBuilder().create();
+    private final boolean skipDependencies;
 
     public RunConfigurationExecutable(final RunConfigurationSettings settings) {
         super(settings);
@@ -35,10 +28,11 @@ public class RunConfigurationExecutable extends DockerExecutable {
         this.loaded = settings.getLoaded();
         this.stack = settings.getStack();
         this.configurationName = settings.getConfigurationName();
+        this.skipDependencies = settings.isSkipDependencies();
     }
 
     @Override
-    public void execute() throws DockerExecutionException {
+    public void execute() throws DockerException {
         // Check already loaded
         if (loaded.contains(configurationName)) {
             debug("Skipping previously loaded configuration: " + configurationName);
@@ -53,14 +47,19 @@ public class RunConfigurationExecutable extends DockerExecutable {
         stack.push(configurationName);
 
         // Load configuration
-        Configuration configuration = loadConfiguration();
+        debug("Loading configuration: " + configurationName);
+        Configuration configuration = ConfigurationLoader.loadConfiguration(configurationName);
 
         // Recursive run 'dependsOn' configurations
-        if (configuration.getDependsOn() != null && !configuration.getDependsOn().isEmpty()) {
-            for (final String dependsOn : configuration.getDependsOn()) {
-                debug("Dependent configuration: " + dependsOn);
-                final RunConfigurationSettings runConfigurationSettings = new ConfiguredRunConfigurationSettings(settings, stack, loaded, dependsOn);
-                new RunConfigurationExecutable(runConfigurationSettings).execute();
+        if (skipDependencies) {
+            debug("Skipping dependent configurations");
+        } else {
+            if (configuration.getDependsOn() != null && !configuration.getDependsOn().isEmpty()) {
+                for (final String dependsOn : configuration.getDependsOn()) {
+                    debug("Dependent configuration: " + dependsOn);
+                    final RunConfigurationSettings runConfigurationSettings = new ConfiguredRunConfigurationSettings(settings, stack, loaded, dependsOn);
+                    new RunConfigurationExecutable(runConfigurationSettings).execute();
+                }
             }
         }
 
@@ -72,8 +71,10 @@ public class RunConfigurationExecutable extends DockerExecutable {
             runExecutable.execute();
             final String containerId = runExecutable.getContainerId();
 
-            final InspectContainerSettings inspectContainerSettings = new ConfiguredInspectContainerSettings(settings, configuration, containerId);
-            new InspectContainerExecutable(inspectContainerSettings).execute();
+            if (configuration.isDaemon()) {
+                final InspectContainerSettings inspectContainerSettings = new ConfiguredInspectContainerSettings(settings, configuration, containerId);
+                new InspectContainerExecutable(inspectContainerSettings).execute();
+            }
         }
 
         // Remove from stack
@@ -82,25 +83,6 @@ public class RunConfigurationExecutable extends DockerExecutable {
             throw new DockerExecutionException("Stack corrupted; removed '" + finished + "' but expected '" + configurationName + "'");
         }
         loaded.add(configurationName);
-    }
-
-    private Configuration loadConfiguration() throws DockerExecutionException {
-        // Load configuration
-        final String resourceName = RESOURCE_BASE + configurationName + ".json";
-        debug("Loading configuration: " + resourceName);
-        final URL resource = getClass().getClassLoader().getResource(resourceName);
-        if (resource == null) {
-            throw new DockerExecutionException("Could not find configuration '" + configurationName + "'");
-        }
-
-        final Configuration configuration;
-        try (final Reader reader = new InputStreamReader(resource.openStream())) {
-            configuration = GSON.fromJson(reader, Configuration.class);
-        } catch (IOException e) {
-            throw new DockerExecutionException("Could not read configuration '" + configurationName + "'");
-        }
-
-        return configuration;
     }
 
     private static class ConfiguredDockerSettings implements DockerSettings {
@@ -182,6 +164,11 @@ public class RunConfigurationExecutable extends DockerExecutable {
         public boolean isRandomPorts() {
             return settings.isRandomPorts();
         }
+
+        @Override
+        public boolean isSkipDependencies() {
+            return settings.isSkipDependencies();
+        }
     }
 
     private static class ConfiguredRunSettings extends ConfiguredDockerSettings implements RunSettings {
@@ -202,7 +189,10 @@ public class RunConfigurationExecutable extends DockerExecutable {
 
         @Override
         public final String getRunOptions() {
-            final StringBuilder runOptions = new StringBuilder(configuration.getRunOptions());
+            final StringBuilder runOptions = new StringBuilder();
+            if (configuration.getRunOptions() != null) {
+                runOptions.append(configuration.getRunOptions());
+            }
 
             // Add network
             if (settings.getNetworkName() != null && !"".equals(settings.getNetworkName().trim())) {
@@ -221,6 +211,11 @@ public class RunConfigurationExecutable extends DockerExecutable {
             }
 
             return StrSubstitutor.replace(runOptions.toString(), settings.getProjectProperties());
+        }
+
+        @Override
+        public boolean isDaemon() {
+            return configuration.isDaemon();
         }
 
         @Override
@@ -279,8 +274,10 @@ public class RunConfigurationExecutable extends DockerExecutable {
         @Override
         public final Properties getPortProperties() {
             final Properties result = new Properties();
-            for (final Configuration.Port port : configuration.getPorts()) {
-                result.setProperty(port.getPort(), port.getProperty());
+            if (configuration.getPorts() != null) {
+                for (final Configuration.Port port : configuration.getPorts()) {
+                    result.setProperty(port.getPort(), port.getProperty());
+                }
             }
             return result;
         }

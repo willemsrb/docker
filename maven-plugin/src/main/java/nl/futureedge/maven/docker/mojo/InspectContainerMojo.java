@@ -1,7 +1,7 @@
 package nl.futureedge.maven.docker.mojo;
 
 import java.util.Properties;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.InspectContainerExecutable;
 import nl.futureedge.maven.docker.support.InspectContainerSettings;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -93,7 +93,7 @@ public final class InspectContainerMojo extends AbstractDockerMojo implements In
     }
 
     @Override
-    protected void executeInternal() throws DockerExecutionException {
+    protected void executeInternal() throws DockerException {
         new InspectContainerExecutable(this).execute();
     }
 }

@@ -2,7 +2,8 @@ package nl.futureedge.maven.docker.support;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
 public abstract class DockerExecutable {
@@ -43,7 +44,7 @@ public abstract class DockerExecutable {
         return new DockerExecutor(debugLogger, infoLogger, warnLogger, dockerOptions);
     }
 
-    protected final <E extends Exception> void doIgnoringFailure(final Execution<E> execution) throws E, DockerExecutionException {
+    protected final <E extends Exception> void doIgnoringFailure(final Execution<E> execution) throws E, DockerException {
         try {
             execution.execute();
         } catch (final DockerExecutionException e) {
@@ -53,7 +54,7 @@ public abstract class DockerExecutable {
         }
     }
 
-    protected final <T, E extends Exception> T doIgnoringFailure(final Command<T, E> command) throws E, DockerExecutionException {
+    protected final <T, E extends Exception> T doIgnoringFailure(final Command<T, E> command) throws E, DockerException {
         try {
             return command.execute();
         } catch (final DockerExecutionException e) {
@@ -65,15 +66,15 @@ public abstract class DockerExecutable {
         }
     }
 
-    public abstract void execute() throws DockerExecutionException;
+    public abstract void execute() throws DockerException;
 
     @FunctionalInterface
     protected interface Command<T, E extends Exception> {
-        T execute() throws DockerExecutionException, E;
+        T execute() throws DockerException, E;
     }
 
     @FunctionalInterface
     protected interface Execution<E extends Exception> {
-        void execute() throws DockerExecutionException, E;
+        void execute() throws DockerException, E;
     }
 }

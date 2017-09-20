@@ -1,8 +1,8 @@
 package nl.futureedge.maven.docker.support;
 
 import java.util.List;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.executor.DockerCommands;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
 public final class StartContainersExecutable extends DockerExecutable {
@@ -15,7 +15,7 @@ public final class StartContainersExecutable extends DockerExecutable {
         this.filter = settings.getFilter();
     }
 
-    public void execute() throws DockerExecutionException {
+    public void execute() throws DockerException {
         debug("Start containers configuration: ");
         debug("- filter: " + filter);
 

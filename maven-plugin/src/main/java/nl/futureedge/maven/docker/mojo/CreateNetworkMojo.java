@@ -1,7 +1,7 @@
 package nl.futureedge.maven.docker.mojo;
 
 import java.util.UUID;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.CreateNetworkExecutable;
 import nl.futureedge.maven.docker.support.CreateNetworkSettings;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -46,7 +46,7 @@ public final class CreateNetworkMojo extends AbstractDockerMojo implements Creat
     }
 
     @Override
-    protected void executeInternal() throws DockerExecutionException {
+    protected void executeInternal() throws DockerException {
         if (networkName == null || "".equals(networkName.trim())) {
             // Generate random name
             getLog().info("Generating random network name");

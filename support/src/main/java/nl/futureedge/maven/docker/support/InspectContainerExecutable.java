@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
 public final class InspectContainerExecutable extends DockerExecutable {
@@ -29,7 +29,7 @@ public final class InspectContainerExecutable extends DockerExecutable {
         this.portProperties = settings.getPortProperties();
     }
 
-    public void execute() throws DockerExecutionException {
+    public void execute() throws DockerException {
         info("Inspect container configuration: ");
         debug("- projectProperties: " + projectProperties);
         info("- containerId: " + containerId);
@@ -124,7 +124,7 @@ public final class InspectContainerExecutable extends DockerExecutable {
         }
     }
 
-    private String inspectContainer(final DockerExecutor executor, final String containerId) throws DockerExecutionException {
+    private String inspectContainer(final DockerExecutor executor, final String containerId) throws DockerException {
         final List<String> arguments = new ArrayList<>();
         arguments.add("inspect");
         arguments.add("--type");

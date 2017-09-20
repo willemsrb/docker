@@ -1,6 +1,6 @@
 package nl.futureedge.maven.docker.mojo;
 
-import nl.futureedge.maven.docker.executor.DockerExecutionException;
+import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.RemoveImagesExecutable;
 import nl.futureedge.maven.docker.support.RemoveImagesSettings;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -24,7 +24,7 @@ public final class RemoveImagesMojo extends AbstractDockerMojo implements Remove
     }
 
     @Override
-    protected void executeInternal() throws DockerExecutionException {
+    protected void executeInternal() throws DockerException {
         new RemoveImagesExecutable(this).execute();
     }
 
