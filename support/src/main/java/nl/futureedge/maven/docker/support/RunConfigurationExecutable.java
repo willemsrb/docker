@@ -71,10 +71,9 @@ public class RunConfigurationExecutable extends DockerExecutable {
             runExecutable.execute();
             final String containerId = runExecutable.getContainerId();
 
-            if (configuration.isDaemon()) {
-                final InspectContainerSettings inspectContainerSettings = new ConfiguredInspectContainerSettings(settings, configuration, containerId);
-                new InspectContainerExecutable(inspectContainerSettings).execute();
-            }
+            // Inspect
+            final InspectContainerSettings inspectContainerSettings = new ConfiguredInspectContainerSettings(settings, configuration, containerId);
+            new InspectContainerExecutable(inspectContainerSettings).execute();
         }
 
         // Remove from stack

@@ -4,5 +4,6 @@
   "imageTag": "${docker.image.version}",
   "daemon": "false",
   "command": "ping -w 3 alpine-3",
+  "containerNameProperty": "ping.name",
   "dependsOn": []
 }

@@ -1,5 +1,10 @@
 package nl.futureedge.maven.docker.support;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -48,49 +53,80 @@ public final class RunExecutable extends DockerExecutable {
         final DockerExecutor executor = createDockerExecutor();
         if (daemon) {
             containerId = doIgnoringFailure(() -> runContainer(executor, runOptions, image, command));
-            info("ContainerId: " + containerId);
-
-            // Set property in maven
-            if (containerIdProperty != null && !"".equals(containerIdProperty.trim())) {
-                projectProperties.setProperty(containerIdProperty, containerId);
-            }
         } else {
-            if(containerIdProperty != null && !"".equals(containerIdProperty)) {
-                warn("ContainerIdProperty set but container is not run as daemon; container id will not be set!");
-            }
-            doIgnoringFailure(() -> executeContainer(executor, runOptions, image, command));
+            containerId = doIgnoringFailure(() -> executeContainer(executor, runOptions, image, command));
         }
+        info("ContainerId: " + containerId);
+
+        // Set property in maven
+        if (containerIdProperty != null && !"".equals(containerIdProperty.trim())) {
+            projectProperties.setProperty(containerIdProperty, containerId);
+        }
+
     }
 
     private String runContainer(final DockerExecutor executor, final String runOptions, final String image, final String command)
             throws DockerExecutionException {
         final List<String> arguments = new ArrayList<>();
+        // run
         arguments.add("run");
         arguments.addAll(Docker.splitOptions(runOptions));
+
+        // daemon
         arguments.add("-d");
 
+        // image
         arguments.add(image);
 
+        // command
         if (command != null && !"".equals(command)) {
             arguments.addAll(Docker.splitOptions(command));
         }
 
+        // execute
         final List<String> executionResult = executor.execute(arguments, false, true);
+
+        // return container id from output
         return executionResult.get(0);
     }
 
-    private void executeContainer(final DockerExecutor executor, final String runOptions, final String image, final String command)
+    private String executeContainer(final DockerExecutor executor, final String runOptions, final String image, final String command)
             throws DockerExecutionException {
         final List<String> arguments = new ArrayList<>();
+
+        // run
         arguments.add("run");
         arguments.addAll(Docker.splitOptions(runOptions));
 
-        arguments.add(image);
+        // add cidfile to run options
+        File cidFile = null;
+        try {
+            cidFile = Files.createTempFile("docker-maven-plugin", "cidfile").toFile();
+            cidFile.delete();
+            arguments.add("--cidfile");
+            arguments.add(cidFile.getAbsolutePath());
 
-        if (command != null && !"".equals(command)) {
-            arguments.addAll(Docker.splitOptions(command));
+            // image
+            arguments.add(image);
+
+            // command
+            if (command != null && !"".equals(command)) {
+                arguments.addAll(Docker.splitOptions(command));
+            }
+
+            // execute
+            executor.execute(arguments, true, false);
+
+            // read container id from cidfile
+            try (final BufferedReader reader = new BufferedReader(new FileReader(cidFile))) {
+                return reader.readLine();
+            }
+        } catch (IOException e) {
+            throw new DockerExecutionException("Could not read cidfile", e);
+        } finally {
+            if (cidFile != null && cidFile.exists()) {
+                cidFile.delete();
+            }
         }
-
-        executor.execute(arguments, true, false);
     }
 }

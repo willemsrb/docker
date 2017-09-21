@@ -85,6 +85,19 @@
                     </execution>
 
                     <execution>
+                        <id>ping-configuration</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>run-configuration</goal>
+                        </goals>
+                        <configuration>
+                            <configurationName>ping</configurationName>
+                            <networkName>${docker.network}</networkName>
+                            <randomPorts>true</randomPorts>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>list-running</id>
                         <phase>integration-test</phase>
                         <goals>
@@ -96,13 +109,13 @@
                     </execution>
 
                     <execution>
-                        <id>ping-3-from-1</id>
+                        <id>ping-command</id>
                         <phase>integration-test</phase>
                         <goals>
                             <goal>command</goal>
                         </goals>
                         <configuration>
-                            <command>exec ${alpine-1.name} ping -w 10 alpine-3</command>
+                            <command>exec ${alpine-1.name} ping -w 5 alpine-3</command>
                         </configuration>
                     </execution>
 
@@ -110,6 +123,7 @@
                         <id>remove-network</id>
                         <phase>post-integration-test</phase>
                         <goals>
+                            <goal>echo-properties</goal>
                             <goal>remove-network</goal>
                         </goals>
                         <configuration>
