@@ -81,6 +81,11 @@
                             <networkName>${docker.network}</networkName>
                             <randomPorts>true</randomPorts>
                             <target>${docker.properties}</target>
+                            <keys>
+                                <key>docker.*</key>
+                                <key>alpine-?.*</key>
+                                <key>ping.name</key>
+                            </keys>
                         </configuration>
                     </execution>
 
@@ -89,11 +94,17 @@
                         <phase>integration-test</phase>
                         <goals>
                             <goal>run-configuration</goal>
+                            <goal>echo-properties</goal>
                         </goals>
                         <configuration>
                             <configurationName>ping</configurationName>
                             <networkName>${docker.network}</networkName>
                             <randomPorts>true</randomPorts>
+                            <keys>
+                                <key>docker.*</key>
+                                <key>alpine-?.*</key>
+                                <key>ping.name</key>
+                            </keys>
                         </configuration>
                     </execution>
 
@@ -123,7 +134,6 @@
                         <id>remove-network</id>
                         <phase>post-integration-test</phase>
                         <goals>
-                            <goal>echo-properties</goal>
                             <goal>remove-network</goal>
                         </goals>
                         <configuration>
