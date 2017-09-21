@@ -4,7 +4,7 @@
 
     <groupId>nl.future-edge.docker</groupId>
     <artifactId>docker</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.2.6</version>
     <packaging>pom</packaging>
 
     <name>Docker - Modules</name>

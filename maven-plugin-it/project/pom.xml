@@ -6,7 +6,7 @@
     <parent>
         <groupId>nl.future-edge.docker</groupId>
         <artifactId>docker-maven-plugin-it</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.2.6</version>
     </parent>
 
     <artifactId>docker-maven-plugin-it-project</artifactId>
