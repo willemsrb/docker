@@ -76,10 +76,16 @@
                             <goal>write-properties</goal>
                         </goals>
                         <configuration>
+                            <!-- Docker -->
                             <configurationName>${docker.configuration}</configurationName>
                             <networkNameProperty>docker.network</networkNameProperty>
                             <networkName>${docker.network}</networkName>
                             <randomPorts>true</randomPorts>
+
+                            <!-- Properties -->
+                            <mergePropertyFiles>
+                                <mergePropertyFile>${project.basedir}/src/test/configuration/my.properties</mergePropertyFile>
+                            </mergePropertyFiles>
                             <target>${docker.properties}</target>
                             <keys>
                                 <key>docker.*</key>
