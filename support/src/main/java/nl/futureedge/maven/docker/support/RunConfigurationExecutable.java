@@ -1,5 +1,8 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
@@ -196,6 +199,22 @@ public class RunConfigurationExecutable extends DockerExecutable {
             return settings.getProjectProperties();
         }
 
+        private String replace(final String value) {
+            final Properties valueProperties = settings.getProjectProperties();
+            final Map<String, String> valueMap = new HashMap<>();
+            final Enumeration<?> propNames = valueProperties.propertyNames();
+            while (propNames.hasMoreElements()) {
+                final String propName = (String) propNames.nextElement();
+                final String propValue = valueProperties.getProperty(propName);
+                valueMap.put(propName, propValue);
+            }
+
+            final StrSubstitutor substitutor = new StrSubstitutor(valueMap);
+            substitutor.setValueDelimiter(':');
+
+            return substitutor.replace(value, settings.getProjectProperties());
+        }
+
         @Override
         public final String getRunOptions() {
             final StringBuilder runOptions = new StringBuilder();
@@ -223,7 +242,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
                 }
             }
 
-            return StrSubstitutor.replace(runOptions.toString(), settings.getProjectProperties());
+            return replace(runOptions.toString());
         }
 
         @Override
@@ -233,9 +252,9 @@ public class RunConfigurationExecutable extends DockerExecutable {
 
         @Override
         public final String getImage() {
-            final String imageRegistry = StrSubstitutor.replace(configuration.getImageRegistry(), settings.getProjectProperties());
-            final String imageName = StrSubstitutor.replace(configuration.getImageName(), settings.getProjectProperties());
-            final String imageTag = StrSubstitutor.replace(configuration.getImageTag(), settings.getProjectProperties());
+            final String imageRegistry = replace(configuration.getImageRegistry());
+            final String imageName = replace(configuration.getImageName());
+            final String imageTag = replace(configuration.getImageTag());
 
             return Docker.getImage(imageRegistry, imageName, imageTag);
         }
@@ -249,7 +268,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
                 command = configuration.getCommand();
             }
 
-            return StrSubstitutor.replace(command, settings.getProjectProperties());
+            return replace(command);
         }
 
         @Override
