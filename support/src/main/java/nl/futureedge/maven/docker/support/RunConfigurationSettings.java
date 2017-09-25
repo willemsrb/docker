@@ -19,6 +19,10 @@ public interface RunConfigurationSettings extends DockerSettings {
 
     String getConfigurationName();
 
+    String getAdditionalRunOptions();
+
+    String getCommand();
+
     String getNetworkName();
 
     boolean isRandomPorts();
@@ -34,6 +38,8 @@ public interface RunConfigurationSettings extends DockerSettings {
         private Set<String> loaded = new HashSet<>();
         private Properties projectProperties = System.getProperties();
         private String configurationName;
+        private String additionalRunOptions;
+        private String command;
         private String networkName;
         private boolean randomPorts = false;
         private boolean skipDependencies = false;
@@ -67,6 +73,16 @@ public interface RunConfigurationSettings extends DockerSettings {
             return this;
         }
 
+        public Builder setAdditionalRunOptions(final String additionalRunOptions) {
+            this.additionalRunOptions = additionalRunOptions;
+            return this;
+        }
+
+        public Builder setCommand(final String command) {
+            this.command = command;
+            return this;
+        }
+
         public Builder setNetworkName(final String networkName) {
             this.networkName = networkName;
             return this;
@@ -89,6 +105,8 @@ public interface RunConfigurationSettings extends DockerSettings {
         private final Set<String> loaded;
         private final Properties projectProperties;
         private final String configurationName;
+        private final String additionalRunOptions;
+        private final String command;
         private final String networkName;
         private final boolean randomPorts;
         private final boolean skipDependencies;
@@ -99,6 +117,8 @@ public interface RunConfigurationSettings extends DockerSettings {
             this.loaded = builder.loaded;
             this.projectProperties = builder.projectProperties;
             this.configurationName = builder.configurationName;
+            this.additionalRunOptions = builder.additionalRunOptions;
+            this.command = builder.command;
             this.networkName = builder.networkName;
             this.randomPorts = builder.randomPorts;
             this.skipDependencies = builder.skipDependencies;
@@ -122,6 +142,15 @@ public interface RunConfigurationSettings extends DockerSettings {
         @Override
         public String getConfigurationName() {
             return configurationName;
+        }
+
+        public String getAdditionalRunOptions() {
+            return additionalRunOptions;
+        }
+
+        @Override
+        public String getCommand() {
+            return command;
         }
 
         @Override

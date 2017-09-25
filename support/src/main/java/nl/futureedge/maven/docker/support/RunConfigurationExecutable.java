@@ -155,6 +155,16 @@ public class RunConfigurationExecutable extends DockerExecutable {
         }
 
         @Override
+        public String getAdditionalRunOptions() {
+            return null;
+        }
+
+        @Override
+        public String getCommand() {
+            return null;
+        }
+
+        @Override
         public String getNetworkName() {
             return settings.getNetworkName();
         }
@@ -193,6 +203,10 @@ public class RunConfigurationExecutable extends DockerExecutable {
                 runOptions.append(configuration.getRunOptions());
             }
 
+            if (settings.getAdditionalRunOptions() != null) {
+                runOptions.append(settings.getAdditionalRunOptions());
+            }
+
             // Add network
             if (settings.getNetworkName() != null && !"".equals(settings.getNetworkName().trim())) {
                 runOptions.append(" --network ").append(settings.getNetworkName());
@@ -228,7 +242,14 @@ public class RunConfigurationExecutable extends DockerExecutable {
 
         @Override
         public final String getCommand() {
-            return StrSubstitutor.replace(configuration.getCommand(), settings.getProjectProperties());
+            final String command;
+            if (settings.getCommand() != null && !"".equals(settings.getCommand().trim())) {
+                command = settings.getCommand();
+            } else {
+                command = configuration.getCommand();
+            }
+
+            return StrSubstitutor.replace(command, settings.getProjectProperties());
         }
 
         @Override

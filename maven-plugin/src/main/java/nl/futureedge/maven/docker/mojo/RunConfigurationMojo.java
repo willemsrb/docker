@@ -31,6 +31,18 @@ public final class RunConfigurationMojo extends AbstractDockerMojo implements Ru
     private String configurationName;
 
     /**
+     * Additional run options.
+     */
+    @Parameter(name = "additionalRunOptions", property = "docker.additionalRunOptions")
+    private String additionalRunOptions;
+
+    /**
+     * Command to execute (overrides the configuration and image default).
+     */
+    @Parameter(name = "command", property = "docker.command")
+    private String command;
+
+    /**
      * Network to bind all configurations to (adds --network &lt;name> to all 'run' commands).
      */
     @Parameter(name = "networkName", property = "docker.networkName")
@@ -57,6 +69,16 @@ public final class RunConfigurationMojo extends AbstractDockerMojo implements Ru
     @Override
     public String getConfigurationName() {
         return configurationName;
+    }
+
+    @Override
+    public String getAdditionalRunOptions() {
+        return additionalRunOptions;
+    }
+
+    @Override
+    public String getCommand() {
+        return command;
     }
 
     @Override
