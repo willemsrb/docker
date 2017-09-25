@@ -1,7 +1,7 @@
 {
-  "imageRegistry": "${docker.registry}",
+  "imageRegistry": "${docker.registry:}",
   "imageName": "alpine",
-  "imageTag": "${docker.image.version}",
+  "imageTag": "${docker.image.version:}",
   "runOptions": "--log-driver json-file --log-opt max-size=1m --log-opt max-file=5 -e ALPINE_2_HOST=${alpine-2.host} -e ALPINE_3_HOST=${alpine-3.host}",
   "command": "top",
   "containerNameProperty": "alpine-1.name",

@@ -212,7 +212,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
             final StrSubstitutor substitutor = new StrSubstitutor(valueMap);
             substitutor.setValueDelimiter(':');
 
-            return substitutor.replace(value, settings.getProjectProperties());
+            return substitutor.replace(value);
         }
 
         @Override
