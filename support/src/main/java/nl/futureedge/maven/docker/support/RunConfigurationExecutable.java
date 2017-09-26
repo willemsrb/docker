@@ -223,6 +223,9 @@ public class RunConfigurationExecutable extends DockerExecutable {
             }
 
             if (settings.getAdditionalRunOptions() != null) {
+                if(runOptions.length() > 0) {
+                    runOptions.append(' ');
+                }
                 runOptions.append(settings.getAdditionalRunOptions());
             }
 
