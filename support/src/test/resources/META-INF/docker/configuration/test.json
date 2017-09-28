@@ -1,0 +1,27 @@
+{
+  "imageRegistry": "registry",
+  "imageName": "alpine",
+  "imageTag": "tag",
+  "runOptions": "runOption1 runOption2",
+  "daemon": "false",
+  "command": "command",
+  "containerIdProperty": "test.containerId",
+  "containerNameProperty": "test.containerName",
+  "hostnameProperty": "test.host",
+  "ports": [
+    {
+      "port": "80/tcp",
+      "external": "80",
+      "property": "test.port.http"
+    },
+    {
+      "port": "82/tcp",
+      "external": "82",
+      "property": "test.port.test"
+    }
+  ],
+  "dependsOn": [
+    "test-2",
+    "test-3"
+  ]
+}
