@@ -1,35 +1,40 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.ArrayList;
 import java.util.List;
-import nl.futureedge.maven.docker.exception.DockerException;
-import nl.futureedge.maven.docker.executor.DockerCommands;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
-public final class StartContainersExecutable extends DockerExecutable {
+/**
+ * Start containers.
+ */
+public final class StartContainersExecutable extends FilteredListExecutable {
 
-    private final String filter;
-
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public StartContainersExecutable(final StartContainersSettings settings) {
         super(settings);
-
-        this.filter = settings.getFilter();
     }
 
-    public void execute() throws DockerException {
+    @Override
+    protected List<String> list(final DockerExecutor executor, final  String filter) throws DockerExecutionException {
         debug("Start containers configuration: ");
         debug("- filter: " + filter);
 
-        final DockerExecutor executor = createDockerExecutor();
-        final List<String> containers = doIgnoringFailure(() -> DockerCommands.listContainers(executor, filter));
-
-        if (containers != null) {
-            for (final String container : containers) {
-                if ("".equals(container.trim())) {
-                    continue;
-                }
-                info("Start container: " + container);
-                doIgnoringFailure(() -> DockerCommands.startContainer(executor, container));
-            }
-        }
+        return RemoveContainersExecutable.listContainers(executor, filter);
     }
+
+    @Override
+    protected void execute(final DockerExecutor executor, final String container) throws DockerExecutionException {
+        info("Start container: " + container);
+
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("start");
+        arguments.add(container);
+
+        executor.execute(arguments, false, false);
+    }
+
 }

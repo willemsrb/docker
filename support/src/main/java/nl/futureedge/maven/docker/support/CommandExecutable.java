@@ -11,12 +11,17 @@ public final class CommandExecutable extends DockerExecutable {
 
     private final String command;
 
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public CommandExecutable(final CommandSettings settings) {
         super(settings);
 
         this.command = settings.getCommand();
     }
 
+    @Override
     public void execute() throws DockerException {
         debug("Command configuration: ");
         debug("- command: " + command);

@@ -1,35 +1,39 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.ArrayList;
 import java.util.List;
-import nl.futureedge.maven.docker.exception.DockerException;
-import nl.futureedge.maven.docker.executor.DockerCommands;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
-public final class StopContainersExecutable extends DockerExecutable {
+/**
+ * Stop containers.
+ */
+public final class StopContainersExecutable extends FilteredListExecutable {
 
-    private final String filter;
-
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public StopContainersExecutable(final StopContainersSettings settings) {
         super(settings);
-
-        this.filter = settings.getFilter();
     }
 
-    public void execute() throws DockerException {
+    @Override
+    protected List<String> list(final DockerExecutor executor, final String filter) throws DockerExecutionException {
         debug("Stop containers configuration: ");
         debug("- filter: " + filter);
 
-        final DockerExecutor executor = createDockerExecutor();
-        final List<String> containers = doIgnoringFailure(() -> DockerCommands.listContainers(executor, filter));
+        return RemoveContainersExecutable.listContainers(executor, filter);
+    }
 
-        if (containers != null) {
-            for (final String container : containers) {
-                if ("".equals(container.trim())) {
-                    continue;
-                }
-                info("Stop container: " + container);
-                doIgnoringFailure(() -> DockerCommands.stopContainer(executor, container));
-            }
-        }
+    @Override
+    protected void execute(final DockerExecutor executor, final String container) throws DockerExecutionException {
+        info("Stop container: " + container);
+
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("stop");
+        arguments.add(container);
+
+        executor.execute(arguments, false, false);
     }
 }

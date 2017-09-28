@@ -1,4 +1,4 @@
 /**
- * Configuration.
+ * Exceptions.
  */
-package nl.futureedge.maven.docker.configuration;
+package nl.futureedge.maven.docker.exception;

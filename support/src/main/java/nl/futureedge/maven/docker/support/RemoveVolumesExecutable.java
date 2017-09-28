@@ -1,35 +1,49 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.ArrayList;
 import java.util.List;
-import nl.futureedge.maven.docker.exception.DockerException;
-import nl.futureedge.maven.docker.executor.DockerCommands;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
-public final class RemoveVolumesExecutable extends DockerExecutable {
+/**
+ * Remove volumes.
+ */
+public final class RemoveVolumesExecutable extends FilteredListExecutable {
 
-    private final String filter;
-
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public RemoveVolumesExecutable(final RemoveVolumesSettings settings) {
         super(settings);
-
-        this.filter = settings.getFilter();
     }
 
-    public void execute() throws DockerException {
+    @Override
+    protected List<String> list(final DockerExecutor executor, final String filter) throws DockerExecutionException {
         debug("Remove volumes configuration: ");
         debug("- filter: " + filter);
 
-        final DockerExecutor executor = createDockerExecutor();
-        final List<String> volumes = doIgnoringFailure(() -> DockerCommands.listVolumes(executor, filter));
-
-        if (volumes != null) {
-            for (final String volume : volumes) {
-                if ("".equals(volume.trim())) {
-                    continue;
-                }
-                info("Remove volume: " + volume);
-                doIgnoringFailure(() -> DockerCommands.removeVolume(executor, volume));
-            }
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("volume");
+        arguments.add("ls");
+        arguments.add("-q");
+        if ((filter != null) && !"".equals(filter)) {
+            arguments.add("--filter");
+            arguments.add(filter);
         }
+
+        return executor.execute(arguments, false, true);
+    }
+
+    @Override
+    protected void execute(final DockerExecutor executor, final String volume) throws DockerExecutionException {
+        info("Remove volume: " + volume);
+
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("volume");
+        arguments.add("rm");
+        arguments.add(volume);
+
+        executor.execute(arguments, false, false);
     }
 }

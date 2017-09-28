@@ -1,36 +1,50 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.ArrayList;
 import java.util.List;
-import nl.futureedge.maven.docker.exception.DockerException;
-import nl.futureedge.maven.docker.executor.DockerCommands;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
-public final class RemoveServicesExecutable extends DockerExecutable {
+/**
+ * Remove services.
+ */
+public final class RemoveServicesExecutable extends FilteredListExecutable {
 
-    private final String filter;
-
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public RemoveServicesExecutable(final RemoveServicesSettings settings) {
         super(settings);
-
-        this.filter = settings.getFilter();
     }
 
     @Override
-    public void execute() throws DockerException {
+    protected List<String> list(final DockerExecutor executor, final String filter) throws DockerExecutionException {
         debug("Remove services configuration: ");
         debug("- filter: " + filter);
 
-        final DockerExecutor executor = createDockerExecutor();
-        final List<String> services = doIgnoringFailure(() -> DockerCommands.listServices(executor, filter));
-
-        if (services != null) {
-            for (final String service : services) {
-                if ("".equals(service.trim())) {
-                    continue;
-                }
-                info("Remove service: " + service);
-                doIgnoringFailure(() -> DockerCommands.removeService(executor, service));
-            }
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("service");
+        arguments.add("ls");
+        arguments.add("-q");
+        if ((filter != null) && !"".equals(filter)) {
+            arguments.add("--filter");
+            arguments.add(filter);
         }
+
+        return executor.execute(arguments, false, true);
     }
+
+    @Override
+    protected void execute(final DockerExecutor executor, final String service) throws DockerExecutionException {
+        info("Remove service: " + service);
+
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("service");
+        arguments.add("rm");
+        arguments.add(service);
+
+        executor.execute(arguments, false, false);
+    }
+
 }

@@ -1,4 +1,13 @@
 package nl.futureedge.maven.docker.executor;
 
-public class DockerExecutorFactory {
+/**
+ * Executor factory.
+ */
+public interface DockerExecutorFactory {
+
+    /**
+     * Create a docker executor.
+     * @return docker executor
+     */
+    DockerExecutor create();
 }

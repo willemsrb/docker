@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import nl.futureedge.maven.docker.configuration.Configuration;
 import nl.futureedge.maven.docker.configuration.ConfigurationLoader;
@@ -16,6 +14,9 @@ import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.Docker;
 import org.apache.commons.text.StrSubstitutor;
 
+/**
+ * Run a configured docker execution.
+ */
 public class RunConfigurationExecutable extends DockerExecutable {
 
     private final RunConfigurationSettings settings;
@@ -24,6 +25,10 @@ public class RunConfigurationExecutable extends DockerExecutable {
     private final String configurationName;
     private final boolean skipDependencies;
 
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public RunConfigurationExecutable(final RunConfigurationSettings settings) {
         super(settings);
 
@@ -60,8 +65,23 @@ public class RunConfigurationExecutable extends DockerExecutable {
             if (configuration.getDependsOn() != null && !configuration.getDependsOn().isEmpty()) {
                 for (final String dependsOn : configuration.getDependsOn()) {
                     debug("Dependent configuration: " + dependsOn);
-                    final RunConfigurationSettings runConfigurationSettings = new ConfiguredRunConfigurationSettings(settings, stack, loaded, dependsOn);
-                    new RunConfigurationExecutable(runConfigurationSettings).execute();
+                    final RunConfigurationSettings runConfigurationSettings = RunConfigurationSettings.builder()
+                            .setDebugLogger(settings.getDebugLogger())
+                            .setInfoLogger(settings.getInfoLogger())
+                            .setWarnLogger(settings.getWarnLogger())
+                            .setDockerOptions(settings.getDockerOptions())
+                            .setIgnoreFailures(settings.isIgnoreFailures())
+                            .setStack(stack)
+                            .setLoaded(loaded)
+                            .setProjectProperties(settings.getProjectProperties())
+                            .setConfigurationName(dependsOn)
+                            .setNetworkName(settings.getNetworkName())
+                            .setRandomPorts(settings.isRandomPorts())
+                            .setSkipDependencies(settings.isSkipDependencies())
+                            .build();
+                    final RunConfigurationExecutable runConfigurationExecutable = new RunConfigurationExecutable(runConfigurationSettings);
+                    runConfigurationExecutable.setFactory(getFactory());
+                    runConfigurationExecutable.execute();
                 }
             }
         }
@@ -69,14 +89,40 @@ public class RunConfigurationExecutable extends DockerExecutable {
         // Run this configuration
         if (configuration.getImageName() != null && !"".equals(configuration.getImageName())) {
             info("Running configuration: " + configurationName);
-            final RunSettings runSettings = new ConfiguredRunSettings(settings, configuration);
+            final RunSettings runSettings = RunSettings.builder()
+                    .setDebugLogger(settings.getDebugLogger())
+                    .setInfoLogger(settings.getInfoLogger())
+                    .setWarnLogger(settings.getWarnLogger())
+                    .setDockerOptions(settings.getDockerOptions())
+                    .setIgnoreFailures(settings.isIgnoreFailures())
+                    .setProjectProperties(settings.getProjectProperties())
+                    .setRunOptions(createRunOptions(configuration))
+                    .setDaemon(configuration.isDaemon())
+                    .setImage(createImage(configuration))
+                    .setCommand(createCommand(configuration))
+                    .setContainerIdProperty(configuration.getContainerIdProperty())
+                    .build();
             final RunExecutable runExecutable = new RunExecutable(runSettings);
+            runExecutable.setFactory(getFactory());
             runExecutable.execute();
             final String containerId = runExecutable.getContainerId();
 
             // Inspect
-            final InspectContainerSettings inspectContainerSettings = new ConfiguredInspectContainerSettings(settings, configuration, containerId);
-            new InspectContainerExecutable(inspectContainerSettings).execute();
+            final InspectContainerSettings inspectContainerSettings = InspectContainerSettings.builder()
+                    .setDebugLogger(settings.getDebugLogger())
+                    .setInfoLogger(settings.getInfoLogger())
+                    .setWarnLogger(settings.getWarnLogger())
+                    .setDockerOptions(settings.getDockerOptions())
+                    .setIgnoreFailures(settings.isIgnoreFailures())
+                    .setProjectProperties(settings.getProjectProperties())
+                    .setContainerId(containerId)
+                    .setContainerNameProperty(configuration.getContainerNameProperty())
+                    .setHostnameProperty(configuration.getHostnameProperty())
+                    .setPortProperties(createPortProperties(configuration))
+                    .build();
+            final InspectContainerExecutable inspectContainerExecutable = new InspectContainerExecutable(inspectContainerSettings);
+            inspectContainerExecutable.setFactory(getFactory());
+            inspectContainerExecutable.execute();
         }
 
         // Remove from stack
@@ -87,241 +133,80 @@ public class RunConfigurationExecutable extends DockerExecutable {
         loaded.add(configurationName);
     }
 
-    private static class ConfiguredDockerSettings implements DockerSettings {
-        private final DockerSettings settings;
-
-        ConfiguredDockerSettings(final RunConfigurationSettings settings) {
-            this.settings = settings;
+    private String createRunOptions(final Configuration configuration) {
+        final StringBuilder runOptions = new StringBuilder();
+        if (configuration.getRunOptions() != null) {
+            runOptions.append(configuration.getRunOptions());
         }
 
-        @Override
-        public final Consumer<String> getDebugLogger() {
-            return settings.getDebugLogger();
+        if (settings.getAdditionalRunOptions() != null) {
+            if (runOptions.length() > 0) {
+                runOptions.append(' ');
+            }
+            runOptions.append(settings.getAdditionalRunOptions());
         }
 
-        @Override
-        public final Consumer<String> getInfoLogger() {
-            return settings.getInfoLogger();
+        // Add network
+        if (settings.getNetworkName() != null && !"".equals(settings.getNetworkName().trim())) {
+            runOptions.append(" --network ").append(settings.getNetworkName());
         }
 
-        @Override
-        public final BiConsumer<String, Exception> getWarnLogger() {
-            return settings.getWarnLogger();
+        // Add port mappings
+        if (configuration.getPorts() != null) {
+            for (final Configuration.Port port : configuration.getPorts()) {
+                runOptions.append(" -p ");
+                if (!settings.isRandomPorts() && port.getExternal() != null && !"".equals(port.getExternal().trim())) {
+                    runOptions.append(port.getExternal()).append(":");
+                }
+                runOptions.append(port.getPort());
+            }
         }
 
-        @Override
-        public final String getDockerOptions() {
-            return settings.getDockerOptions();
-        }
-
-        @Override
-        public final boolean isIgnoreFailures() {
-            return settings.isIgnoreFailures();
-        }
+        return replace(runOptions.toString());
     }
 
-    private static class ConfiguredRunConfigurationSettings extends ConfiguredDockerSettings implements RunConfigurationSettings {
+    private String createImage(final Configuration configuration) {
+        final String imageRegistry = replace(configuration.getImageRegistry());
+        final String imageName = replace(configuration.getImageName());
+        final String imageTag = replace(configuration.getImageTag());
 
-        private final RunConfigurationSettings settings;
-        private final Stack<String> stack;
-        private final Set<String> loaded;
-        private final String configurationName;
-
-        ConfiguredRunConfigurationSettings(final RunConfigurationSettings settings, final Stack<String> stack, final Set<String> loaded,
-                                           final String configurationName) {
-            super(settings);
-
-            this.settings = settings;
-            this.stack = stack;
-            this.loaded = loaded;
-            this.configurationName = configurationName;
-        }
-
-        @Override
-        public Stack<String> getStack() {
-            return stack;
-        }
-
-        @Override
-        public Set<String> getLoaded() {
-            return loaded;
-        }
-
-        @Override
-        public Properties getProjectProperties() {
-            return settings.getProjectProperties();
-        }
-
-        @Override
-        public String getConfigurationName() {
-            return configurationName;
-        }
-
-        @Override
-        public String getAdditionalRunOptions() {
-            return null;
-        }
-
-        @Override
-        public String getCommand() {
-            return null;
-        }
-
-        @Override
-        public String getNetworkName() {
-            return settings.getNetworkName();
-        }
-
-        @Override
-        public boolean isRandomPorts() {
-            return settings.isRandomPorts();
-        }
-
-        @Override
-        public boolean isSkipDependencies() {
-            return settings.isSkipDependencies();
-        }
+        return Docker.getImage(imageRegistry, imageName, imageTag);
     }
 
-    private static class ConfiguredRunSettings extends ConfiguredDockerSettings implements RunSettings {
-
-        private final RunConfigurationSettings settings;
-        private final Configuration configuration;
-
-        ConfiguredRunSettings(final RunConfigurationSettings settings, final Configuration configuration) {
-            super(settings);
-            this.settings = settings;
-            this.configuration = configuration;
+    private String createCommand(final Configuration configuration) {
+        final String command;
+        if (settings.getCommand() != null && !"".equals(settings.getCommand().trim())) {
+            command = settings.getCommand();
+        } else {
+            command = configuration.getCommand();
         }
 
-        @Override
-        public final Properties getProjectProperties() {
-            return settings.getProjectProperties();
-        }
-
-        private String replace(final String value) {
-            final Properties valueProperties = settings.getProjectProperties();
-            final Map<String, String> valueMap = new HashMap<>();
-            final Enumeration<?> propNames = valueProperties.propertyNames();
-            while (propNames.hasMoreElements()) {
-                final String propName = (String) propNames.nextElement();
-                final String propValue = valueProperties.getProperty(propName);
-                valueMap.put(propName, propValue);
-            }
-
-            final StrSubstitutor substitutor = new StrSubstitutor(valueMap);
-            substitutor.setValueDelimiter(':');
-
-            return substitutor.replace(value);
-        }
-
-        @Override
-        public final String getRunOptions() {
-            final StringBuilder runOptions = new StringBuilder();
-            if (configuration.getRunOptions() != null) {
-                runOptions.append(configuration.getRunOptions());
-            }
-
-            if (settings.getAdditionalRunOptions() != null) {
-                if(runOptions.length() > 0) {
-                    runOptions.append(' ');
-                }
-                runOptions.append(settings.getAdditionalRunOptions());
-            }
-
-            // Add network
-            if (settings.getNetworkName() != null && !"".equals(settings.getNetworkName().trim())) {
-                runOptions.append(" --network ").append(settings.getNetworkName());
-            }
-
-            // Add port mappings
-            if (configuration.getPorts() != null) {
-                for (final Configuration.Port port : configuration.getPorts()) {
-                    runOptions.append(" -p ");
-                    if (!settings.isRandomPorts() && port.getExternal() != null && !"".equals(port.getExternal().trim())) {
-                        runOptions.append(port.getExternal()).append(":");
-                    }
-                    runOptions.append(port.getPort());
-                }
-            }
-
-            return replace(runOptions.toString());
-        }
-
-        @Override
-        public boolean isDaemon() {
-            return configuration.isDaemon();
-        }
-
-        @Override
-        public final String getImage() {
-            final String imageRegistry = replace(configuration.getImageRegistry());
-            final String imageName = replace(configuration.getImageName());
-            final String imageTag = replace(configuration.getImageTag());
-
-            return Docker.getImage(imageRegistry, imageName, imageTag);
-        }
-
-        @Override
-        public final String getCommand() {
-            final String command;
-            if (settings.getCommand() != null && !"".equals(settings.getCommand().trim())) {
-                command = settings.getCommand();
-            } else {
-                command = configuration.getCommand();
-            }
-
-            return replace(command);
-        }
-
-        @Override
-        public final String getContainerIdProperty() {
-            return configuration.getContainerIdProperty();
-        }
+        return replace(command);
     }
 
-    private static class ConfiguredInspectContainerSettings extends ConfiguredDockerSettings implements InspectContainerSettings {
-
-        private final RunConfigurationSettings settings;
-        private final Configuration configuration;
-        private final String containerId;
-
-        ConfiguredInspectContainerSettings(final RunConfigurationSettings settings, final Configuration configuration, final String containerId) {
-            super(settings);
-            this.settings = settings;
-            this.configuration = configuration;
-            this.containerId = containerId;
-        }
-
-        @Override
-        public final Properties getProjectProperties() {
-            return settings.getProjectProperties();
-        }
-
-        @Override
-        public final String getContainerId() {
-            return containerId;
-        }
-
-        @Override
-        public final String getContainerNameProperty() {
-            return configuration.getContainerNameProperty();
-        }
-
-        @Override
-        public String getHostnameProperty() {
-            return configuration.getHostnameProperty();
-        }
-
-        @Override
-        public final Properties getPortProperties() {
-            final Properties result = new Properties();
-            if (configuration.getPorts() != null) {
-                for (final Configuration.Port port : configuration.getPorts()) {
-                    result.setProperty(port.getPort(), port.getProperty());
-                }
+    private Properties createPortProperties(final Configuration configuration) {
+        final Properties result = new Properties();
+        if (configuration.getPorts() != null) {
+            for (final Configuration.Port port : configuration.getPorts()) {
+                result.setProperty(port.getPort(), port.getProperty());
             }
-            return result;
         }
+        return result;
+    }
+
+    private String replace(final String value) {
+        final Properties valueProperties = settings.getProjectProperties();
+        final Map<String, String> valueMap = new HashMap<>();
+        final Enumeration<?> propNames = valueProperties.propertyNames();
+        while (propNames.hasMoreElements()) {
+            final String propName = (String) propNames.nextElement();
+            final String propValue = valueProperties.getProperty(propName);
+            valueMap.put(propName, propValue);
+        }
+
+        final StrSubstitutor substitutor = new StrSubstitutor(valueMap);
+        substitutor.setValueDelimiter(':');
+
+        return substitutor.replace(value);
     }
 }

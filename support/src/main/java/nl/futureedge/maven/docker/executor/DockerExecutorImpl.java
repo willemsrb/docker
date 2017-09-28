@@ -13,7 +13,7 @@ import nl.futureedge.maven.docker.exception.DockerExecutionException;
 /**
  * Docker command executor.
  */
-public final class DockerExecutor {
+public final class DockerExecutorImpl implements DockerExecutor {
 
     private final Consumer<String> debugLogger;
     private final Consumer<String> infoLogger;
@@ -21,14 +21,14 @@ public final class DockerExecutor {
     private final List<String> baseCommand;
 
     /**
-     * Constructor.
+     * Create a new docker executor.
      * @param debugLogger logger for debug messages
      * @param infoLogger logger for informational messages
      * @param warnLogger logger for warning messages
      * @param dockerOptions options for the docker command
      */
-    public DockerExecutor(final Consumer<String> debugLogger, final Consumer<String> infoLogger, final BiConsumer<String, Exception> warnLogger,
-                          final String dockerOptions) {
+    public DockerExecutorImpl(final Consumer<String> debugLogger, final Consumer<String> infoLogger, final BiConsumer<String, Exception> warnLogger,
+                              final String dockerOptions) {
         this.debugLogger = debugLogger;
         this.infoLogger = infoLogger;
         this.warnLogger = warnLogger;
@@ -38,23 +38,7 @@ public final class DockerExecutor {
         baseCommand.addAll(Docker.splitOptions(dockerOptions));
     }
 
-    /**
-     * Execute a docker command.
-     * @param arguments arguments (should not contain docker only the arguments)
-     * @throws DockerExecutionException on failures
-     */
-    public void execute(final List<String> arguments) throws DockerExecutionException {
-        execute(arguments, true, false);
-    }
-
-    /**
-     * Execute a docker command.
-     * @param arguments arguments (should not contain docker only the arguments)
-     * @param logOut true, if output from StdOut should be logged
-     * @param returnOut true if output from StdOut should be returned
-     * @return the output
-     * @throws DockerExecutionException on failures
-     */
+    @Override
     public List<String> execute(final List<String> arguments, final boolean logOut, final boolean returnOut) throws DockerExecutionException {
         final List<String> command = new ArrayList<>(baseCommand);
         command.addAll(arguments);

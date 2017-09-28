@@ -118,6 +118,10 @@ public final class InspectContainerExecutable extends DockerExecutable {
                 }
                 final JsonObject mapping = mappings.get(0).getAsJsonObject();
                 final JsonPrimitive port = mapping.getAsJsonPrimitive("HostPort");
+                if(port == null) {
+                    warn("Port: HostPort primitive not found");
+                    continue;
+                }
                 info("Port " + portPropertyKey + ": " + port.getAsString());
                 projectProperties.setProperty(portProperties.getProperty(portPropertyKey), port.getAsString());
             }

@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Docker utilities.
+ */
 public final class Docker {
 
     private static final String REGISTRY_SEPARATOR = "/";
@@ -12,7 +15,13 @@ public final class Docker {
     private static final String ALL_WHITESPACE = "\\s+";
     private static final String SINGLE_SPACE = " ";
 
-
+    /**
+     * Get the image composed of the given components.
+     * @param registry registry (can be empty or null)
+     * @param name namem (should not be empty)
+     * @param tag tag (can be empty or null(
+     * @return image
+     */
     public static String getImage(final String registry, final String name, final String tag) {
         if (name == null || "".equals(name.trim())) {
             return name;
@@ -36,6 +45,11 @@ public final class Docker {
         return image.toString();
     }
 
+    /**
+     * Split options (removes redundant whitespace).
+     * @param options options
+     * @return options
+     */
     public static List<String> splitOptions(final String options) {
         if ((options != null) && !"".equals(options.trim())) {
             final String normalized = options.replaceAll(ALL_WHITESPACE, SINGLE_SPACE).trim();

@@ -1,37 +1,63 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.ArrayList;
 import java.util.List;
-import nl.futureedge.maven.docker.exception.DockerException;
-import nl.futureedge.maven.docker.executor.DockerCommands;
+import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
+/**
+ * Remove containers.
+ */
+public final class RemoveContainersExecutable extends FilteredListExecutable {
 
-public final class RemoveContainersExecutable extends DockerExecutable {
-
-    private final String filter;
-
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public RemoveContainersExecutable(final RemoveContainersSettings settings) {
         super(settings);
+    }
 
-        this.filter = settings.getFilter();
+    /**
+     * List containers.
+     * @param executor executor
+     * @param filter filter
+     * @return list of containers
+     * @throws DockerExecutionException on any errors
+     */
+    protected static List<String> listContainers(final DockerExecutor executor, String filter) throws DockerExecutionException {
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("ps");
+        arguments.add("-a");
+        arguments.add("-q");
+        if ((filter != null) && !"".equals(filter)) {
+            arguments.add("--filter");
+            arguments.add(filter);
+        }
+        arguments.add("--format");
+        arguments.add("{{.Names}}");
+
+        return executor.execute(arguments, false, true);
     }
 
     @Override
-    public void execute() throws DockerException {
+    protected List<String> list(final DockerExecutor executor, String filter) throws DockerExecutionException {
         debug("Remove containers configuration: ");
         debug("- filter: " + filter);
 
-        final DockerExecutor executor = createDockerExecutor();
-        final List<String> containers = doIgnoringFailure(() -> DockerCommands.listContainers(executor, filter));
-
-        if (containers != null) {
-            for (final String container : containers) {
-                if ("".equals(container.trim())) {
-                    continue;
-                }
-                info("Remove container: " + container);
-                doIgnoringFailure(() -> DockerCommands.removeContainer(executor, container));
-            }
-        }
+        return listContainers(executor, filter);
     }
+
+    @Override
+    protected void execute(final DockerExecutor executor, final String container) throws DockerExecutionException {
+        info("Remove container: " + container);
+
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("rm");
+        arguments.add("-vf");
+        arguments.add(container);
+
+        executor.execute(arguments, false, false);
+    }
+
 }

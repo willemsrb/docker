@@ -2,27 +2,59 @@ package nl.futureedge.maven.docker.support;
 
 import java.util.Properties;
 
+/**
+ * Settings.
+ */
 public interface RunSettings extends DockerSettings {
 
+    /**
+     * @return project properties (to store inspected values)
+     */
     Properties getProjectProperties();
 
+    /**
+     * @return run options
+     */
     String getRunOptions();
 
+    /**
+     * @return should this container be run as a daemon?
+     */
     boolean isDaemon();
 
+    /**
+     * @return image
+     */
     String getImage();
 
+    /**
+     * @return command
+     */
     String getCommand();
 
+    /**
+     * @return property to store container id
+     */
     String getContainerIdProperty();
 
+    /**
+     * @return builder
+     */
     static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder.
+     *
+     * <ul>
+     *     <li>Default projectProperties = {@link System#getProperties()}</li>
+     *     <li>Default daemon = true</li>
+     * </ul>
+     */
     final class Builder extends DockerSettings.Builder<Builder> {
 
-        private Properties projectProperties = System.getProperties();;
+        private Properties projectProperties = System.getProperties();
         private String runOptions;
         private boolean daemon = true;
         private String image;
@@ -34,41 +66,75 @@ public interface RunSettings extends DockerSettings {
             super.setBuilder(this);
         }
 
+        @Override
         public RunSettings build() {
             return new RunSettingsImpl(this);
         }
 
+        /**
+         * Set project properties (to store inspected values)
+         * @param projectProperties project properties
+         * @return this builder
+         */
         public Builder setProjectProperties(final Properties projectProperties) {
             this.projectProperties = projectProperties;
             return this;
         }
 
+        /**
+         * Set run options.
+         * @param runOptions run options
+         * @return this builder
+         */
         public Builder setRunOptions(final String runOptions) {
             this.runOptions = runOptions;
             return this;
         }
 
+        /**
+         * Sets if this container should be run as a daemon?
+         * @param daemon true, if this container should be run as a daemon
+         * @return this builder
+         */
         public Builder setDaemon(final boolean daemon) {
             this.daemon = daemon;
             return this;
         }
 
+        /**
+         * Set image.
+         * @param image image
+         * @return this builder
+         */
         public Builder setImage(final String image) {
             this.image = image;
             return this;
         }
 
+        /**
+         * Set command.
+         * @param command command
+         * @return this builder
+         */
         public Builder setCommand(final String command) {
             this.command = command;
             return this;
         }
 
+        /**
+         * Set property to store container id.
+         * @param containerIdProperty property to store container id
+         * @return this builder
+         */
         public Builder setContainerIdProperty(final String containerIdProperty) {
             this.containerIdProperty = containerIdProperty;
             return this;
         }
     }
 
+    /**
+     * Settings implementation.
+     */
     final class RunSettingsImpl extends DockerSettingsImpl implements RunSettings {
 
         private final Properties projectProperties;

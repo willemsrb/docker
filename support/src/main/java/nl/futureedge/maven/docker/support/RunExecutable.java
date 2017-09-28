@@ -13,6 +13,9 @@ import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.Docker;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
+/**
+ * Run a docker container.
+ */
 public final class RunExecutable extends DockerExecutable {
 
     private final Properties projectProperties;
@@ -24,6 +27,10 @@ public final class RunExecutable extends DockerExecutable {
 
     private String containerId;
 
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public RunExecutable(final RunSettings settings) {
         super(settings);
 
@@ -35,6 +42,10 @@ public final class RunExecutable extends DockerExecutable {
         this.containerIdProperty = settings.getContainerIdProperty();
     }
 
+    /**
+     * Return the container id retrieved after running the container.
+     * @return container id
+     */
     public String getContainerId() {
         return containerId;
     }
@@ -83,10 +94,15 @@ public final class RunExecutable extends DockerExecutable {
             arguments.addAll(Docker.splitOptions(command));
         }
 
+        System.out.println(arguments);
+
         // execute
         final List<String> executionResult = executor.execute(arguments, false, true);
 
         // return container id from output
+        if (executionResult.isEmpty()) {
+            throw new DockerExecutionException("Docker command did not return a container id");
+        }
         return executionResult.get(0);
     }
 

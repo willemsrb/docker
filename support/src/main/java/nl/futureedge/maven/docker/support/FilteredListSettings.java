@@ -1,44 +1,51 @@
 package nl.futureedge.maven.docker.support;
 
-public interface RemoveContainersSettings extends DockerSettings {
+/**
+ * Settings.
+ */
+public interface FilteredListSettings extends DockerSettings {
 
+    /**
+     * @return filter
+     */
     String getFilter();
 
-    static Builder builder() {
-        return new Builder();
-    }
-
-    final class Builder extends DockerSettings.Builder<RemoveContainersSettings.Builder> {
+    /**
+     * Builder.
+     */
+    public abstract class Builder<T extends Builder> extends DockerSettings.Builder<T> {
 
         private String filter;
 
         protected Builder() {
             super();
-            super.setBuilder(this);
         }
 
-        public RemoveContainersSettings build() {
-            return new RemoveContainersSettingsImpl(this);
-        }
-
-
-        public Builder setFilter(final String filter) {
+        /**
+         * Set the filter.
+         * @param filter filter
+         * @return this builder
+         */
+        public T setFilter(final String filter) {
             this.filter = filter;
-            return this;
+            return getBuilder();
         }
     }
 
-    final class RemoveContainersSettingsImpl extends DockerSettingsImpl implements RemoveContainersSettings {
+    /**
+     * Settings implementation.
+     */
+    class FilteredListSettingsImpl extends DockerSettingsImpl implements FilteredListSettings {
 
         private final String filter;
 
-        protected RemoveContainersSettingsImpl(final RemoveContainersSettings.Builder builder) {
+        protected FilteredListSettingsImpl(final FilteredListSettings.Builder builder) {
             super(builder);
             this.filter = builder.filter;
         }
 
         @Override
-        public String getFilter() {
+        public final String getFilter() {
             return filter;
         }
     }

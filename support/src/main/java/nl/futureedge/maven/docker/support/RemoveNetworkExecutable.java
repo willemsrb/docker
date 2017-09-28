@@ -5,10 +5,17 @@ import java.util.List;
 import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.executor.DockerExecutor;
 
+/**
+ * Remove a network.
+ */
 public final class RemoveNetworkExecutable extends DockerExecutable {
 
     private final String networkName;
 
+    /**
+     * Create a new docker command execution.
+     * @param settings settings.
+     */
     public RemoveNetworkExecutable(final RemoveNetworkSettings settings) {
         super(settings);
 
@@ -21,10 +28,10 @@ public final class RemoveNetworkExecutable extends DockerExecutable {
         debug("- networkName: " + networkName);
 
         final DockerExecutor executor = createDockerExecutor();
-        doIgnoringFailure(() -> createNetwork(executor));
+        doIgnoringFailure(() -> removeNetwork(executor));
     }
 
-    private void createNetwork(final DockerExecutor executor) throws DockerException {
+    private void removeNetwork(final DockerExecutor executor) throws DockerException {
         final List<String> arguments = new ArrayList<>();
         arguments.add("network");
         arguments.add("rm");
