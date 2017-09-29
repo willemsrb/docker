@@ -157,7 +157,7 @@ public final class RunMojo extends AbstractDockerMojo implements RunSettings, In
      * @param creator command creator
      */
     void setRunExecutableCreator(final Function<RunSettings, RunExecutable> creator) {
-        this.runExecutableCreator = runExecutableCreator;
+        this.runExecutableCreator = creator;
     }
 
     /**
@@ -165,7 +165,7 @@ public final class RunMojo extends AbstractDockerMojo implements RunSettings, In
      * @param creator command creator
      */
     void setInspectContainerExecutableCreator(final Function<InspectContainerSettings, DockerExecutable> creator) {
-        this.inspectContainerExecutableCreator = inspectContainerExecutableCreator;
+        this.inspectContainerExecutableCreator = creator;
     }
 
     @Override
