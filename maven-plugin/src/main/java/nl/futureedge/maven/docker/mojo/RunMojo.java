@@ -1,9 +1,11 @@
 package nl.futureedge.maven.docker.mojo;
 
 import java.util.Properties;
+import java.util.function.Function;
 import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.exception.DockerExecutionException;
 import nl.futureedge.maven.docker.executor.Docker;
+import nl.futureedge.maven.docker.support.DockerExecutable;
 import nl.futureedge.maven.docker.support.InspectContainerExecutable;
 import nl.futureedge.maven.docker.support.InspectContainerSettings;
 import nl.futureedge.maven.docker.support.RunExecutable;
@@ -93,6 +95,9 @@ public final class RunMojo extends AbstractDockerMojo implements RunSettings, In
     @Parameter(name = "portProperties")
     private Properties portProperties;
 
+    private Function<RunSettings, RunExecutable> runExecutableCreator = RunExecutable::new;
+    private Function<InspectContainerSettings, DockerExecutable> inspectContainerExecutableCreator = InspectContainerExecutable::new;
+
     @Override
     public Properties getProjectProperties() {
         return project.getProperties();
@@ -147,17 +152,33 @@ public final class RunMojo extends AbstractDockerMojo implements RunSettings, In
         return InspectContainerMojo.getPortProperties(portPropertiesAsString, portProperties);
     }
 
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setRunExecutableCreator(final Function<RunSettings, RunExecutable> creator) {
+        this.runExecutableCreator = runExecutableCreator;
+    }
+
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setInspectContainerExecutableCreator(final Function<InspectContainerSettings, DockerExecutable> creator) {
+        this.inspectContainerExecutableCreator = inspectContainerExecutableCreator;
+    }
+
     @Override
     protected void executeInternal() throws DockerException {
         if (getImage() == null || "".equals(getImage().trim())) {
             throw new DockerExecutionException("No image (user attribute image or attributes imageRegistry, imageName and imageTag configured to run");
         }
 
-        final RunExecutable runExecutable = new RunExecutable(this);
+        final RunExecutable runExecutable = runExecutableCreator.apply(this);
         runExecutable.execute();
 
         // Quality of life: Inspect container after run
         this.containerId = runExecutable.getContainerId();
-        new InspectContainerExecutable(this).execute();
+        inspectContainerExecutableCreator.apply(this).execute();
     }
 }

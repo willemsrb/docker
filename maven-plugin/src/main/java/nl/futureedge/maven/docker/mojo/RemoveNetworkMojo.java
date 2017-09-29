@@ -1,6 +1,8 @@
 package nl.futureedge.maven.docker.mojo;
 
+import java.util.function.Function;
 import nl.futureedge.maven.docker.exception.DockerException;
+import nl.futureedge.maven.docker.support.DockerExecutable;
 import nl.futureedge.maven.docker.support.RemoveContainersExecutable;
 import nl.futureedge.maven.docker.support.RemoveContainersSettings;
 import nl.futureedge.maven.docker.support.RemoveNetworkExecutable;
@@ -34,6 +36,10 @@ public final class RemoveNetworkMojo extends AbstractDockerMojo implements Remov
     @Parameter(name = "networkName", property = "docker.networkName", required = true)
     private String networkName;
 
+    private Function<StopContainersSettings, DockerExecutable> stopContainersExecutableCreator = StopContainersExecutable::new;
+    private Function<RemoveContainersSettings, DockerExecutable> removeContainersExecutableCreator = RemoveContainersExecutable::new;
+    private Function<RemoveNetworkSettings, DockerExecutable> removeNetworkExecutableCreator = RemoveNetworkExecutable::new;
+
     @Override
     public String getNetworkName() {
         return networkName;
@@ -44,16 +50,39 @@ public final class RemoveNetworkMojo extends AbstractDockerMojo implements Remov
         return "network=" + networkName;
     }
 
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setStopContainersExecutableCreator(final Function<StopContainersSettings, DockerExecutable> creator) {
+        this.stopContainersExecutableCreator = creator;
+    }
+
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setRemoveContainersExecutableCreator(final Function<RemoveContainersSettings, DockerExecutable> creator) {
+        this.removeContainersExecutableCreator = creator;
+    }
+
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setRemoveNetworkExecutableCreator(final Function<RemoveNetworkSettings, DockerExecutable> creator) {
+        this.removeNetworkExecutableCreator = creator;
+    }
+
     @Override
     protected void executeInternal() throws DockerException {
         if (stopContainers) {
-            new StopContainersExecutable(this).execute();
+            stopContainersExecutableCreator.apply(this).execute();
         }
         if (removeContainers) {
-            new RemoveContainersExecutable(this).execute();
+            removeContainersExecutableCreator.apply(this).execute();
         }
 
-        new RemoveNetworkExecutable(this).execute();
-
+        removeNetworkExecutableCreator.apply(this).execute();
     }
 }

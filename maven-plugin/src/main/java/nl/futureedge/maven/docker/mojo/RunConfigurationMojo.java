@@ -2,7 +2,9 @@ package nl.futureedge.maven.docker.mojo;
 
 
 import java.util.Properties;
+import java.util.function.Function;
 import nl.futureedge.maven.docker.exception.DockerException;
+import nl.futureedge.maven.docker.support.DockerExecutable;
 import nl.futureedge.maven.docker.support.RunConfigurationExecutable;
 import nl.futureedge.maven.docker.support.RunConfigurationSettings;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -17,12 +19,6 @@ public final class RunConfigurationMojo extends AbstractDockerMojo implements Ru
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
-
-    /**
-     * Properties to load before running the configuration.
-     */
-    @Parameter(name = "configurationProperties", property = "docker.configurationProperties")
-    private Properties configurationProperties;
 
     /**
      * Configuration name to run.
@@ -60,6 +56,7 @@ public final class RunConfigurationMojo extends AbstractDockerMojo implements Ru
     @Parameter(name = "skipDependencies", property = "docker.skipDependencies", defaultValue = "false")
     private boolean skipDependencies;
 
+    private Function<RunConfigurationSettings, DockerExecutable> runConfigurationExecutableCreator = RunConfigurationExecutable::new;
 
     @Override
     public Properties getProjectProperties() {
@@ -96,13 +93,16 @@ public final class RunConfigurationMojo extends AbstractDockerMojo implements Ru
         return skipDependencies;
     }
 
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setRunConfigurationExecutableCreator(final Function<RunConfigurationSettings, DockerExecutable> creator) {
+        this.runConfigurationExecutableCreator = creator;
+    }
+
     @Override
     protected void executeInternal() throws DockerException {
-        // Load properties
-        for (final String propertyName : configurationProperties.stringPropertyNames()) {
-            project.getProperties().setProperty(propertyName, configurationProperties.getProperty(propertyName));
-        }
-
-        new RunConfigurationExecutable(this).execute();
+        runConfigurationExecutableCreator.apply(this).execute();
     }
 }

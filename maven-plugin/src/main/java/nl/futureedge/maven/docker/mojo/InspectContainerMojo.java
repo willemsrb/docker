@@ -1,7 +1,9 @@
 package nl.futureedge.maven.docker.mojo;
 
 import java.util.Properties;
+import java.util.function.Function;
 import nl.futureedge.maven.docker.exception.DockerException;
+import nl.futureedge.maven.docker.support.DockerExecutable;
 import nl.futureedge.maven.docker.support.InspectContainerExecutable;
 import nl.futureedge.maven.docker.support.InspectContainerSettings;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -47,6 +49,8 @@ public final class InspectContainerMojo extends AbstractDockerMojo implements In
     @Parameter(name = "portProperties")
     private Properties portProperties;
 
+    private Function<InspectContainerSettings, DockerExecutable> inspectContainerExecutableCreator = InspectContainerExecutable::new;
+
     @Override
     public Properties getProjectProperties() {
         return project.getProperties();
@@ -72,6 +76,7 @@ public final class InspectContainerMojo extends AbstractDockerMojo implements In
         return getPortProperties(portPropertiesAsString, portProperties);
     }
 
+
     public static Properties getPortProperties(final String[] portPropertiesAsString, final Properties portProperties) {
         final Properties result = new Properties();
         if (portProperties != null) {
@@ -92,8 +97,16 @@ public final class InspectContainerMojo extends AbstractDockerMojo implements In
         return result;
     }
 
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setInspectContainerExecutableCreator(final Function<InspectContainerSettings, DockerExecutable> creator) {
+        this.inspectContainerExecutableCreator = creator;
+    }
+
     @Override
     protected void executeInternal() throws DockerException {
-        new InspectContainerExecutable(this).execute();
+        inspectContainerExecutableCreator.apply(this).execute();
     }
 }

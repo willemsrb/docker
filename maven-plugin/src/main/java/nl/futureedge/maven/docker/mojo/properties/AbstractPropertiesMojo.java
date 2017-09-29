@@ -17,7 +17,6 @@ public abstract class AbstractPropertiesMojo extends AbstractMojo {
     @Parameter(name = "keys", property = "properties.keys")
     private String[] keys;
 
-
     protected final Properties getProperties() {
         final Properties properties = project.getProperties();
 
@@ -56,7 +55,7 @@ public abstract class AbstractPropertiesMojo extends AbstractMojo {
         return Pattern.compile(pattern.toString());
     }
 
-    public static String globToRegex(final String glob) {
+    private static String globToRegex(final String glob) {
         final StringBuilder out = new StringBuilder();
         for (int i = 0; i < glob.length(); ++i) {
             final char c = glob.charAt(i);

@@ -62,7 +62,6 @@ public abstract class AbstractDockerMojo extends AbstractMojo implements DockerS
         return getLog()::warn;
     }
 
-
     @Override
     public final void execute() throws MojoExecutionException, MojoFailureException {
         if (isSkip()) {

@@ -1,9 +1,11 @@
 package nl.futureedge.maven.docker.mojo;
 
 import java.util.UUID;
+import java.util.function.Function;
 import nl.futureedge.maven.docker.exception.DockerException;
 import nl.futureedge.maven.docker.support.CreateNetworkExecutable;
 import nl.futureedge.maven.docker.support.CreateNetworkSettings;
+import nl.futureedge.maven.docker.support.DockerExecutable;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -35,6 +37,8 @@ public final class CreateNetworkMojo extends AbstractDockerMojo implements Creat
     @Parameter(name = "networkNameProperty", property = "docker.networkNameProperty")
     private String networkNameProperty;
 
+    private Function<CreateNetworkSettings, DockerExecutable> createNetworkExecutableCreator = CreateNetworkExecutable::new;
+
     @Override
     public String getNetworkOptions() {
         return networkOptions;
@@ -45,6 +49,15 @@ public final class CreateNetworkMojo extends AbstractDockerMojo implements Creat
         return networkName;
     }
 
+
+    /**
+     * For testing purposes only: command creator.
+     * @param creator command creator
+     */
+    void setCreateNetworkExecutableCreator(final Function<CreateNetworkSettings, DockerExecutable> creator) {
+        this.createNetworkExecutableCreator = creator;
+    }
+
     @Override
     protected void executeInternal() throws DockerException {
         if (networkName == null || "".equals(networkName.trim())) {
@@ -53,7 +66,7 @@ public final class CreateNetworkMojo extends AbstractDockerMojo implements Creat
             networkName = "generated-" + UUID.randomUUID().toString();
         }
 
-        new CreateNetworkExecutable(this).execute();
+        createNetworkExecutableCreator.apply(this).execute();
 
         if (networkNameProperty != null && !"".equals(networkNameProperty)) {
             project.getProperties().setProperty(networkNameProperty, networkName);
