@@ -9,16 +9,16 @@ public interface RemoveContainersSettings extends FilteredListSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static RemoveContainersSettingsBuilder builder() {
+        return new RemoveContainersSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    final class Builder extends FilteredListSettings.Builder<Builder> {
+    final class RemoveContainersSettingsBuilder extends FilteredListSettings.Builder<RemoveContainersSettingsBuilder> {
 
-        protected Builder() {
+        protected RemoveContainersSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -34,7 +34,7 @@ public interface RemoveContainersSettings extends FilteredListSettings {
      */
     final class RemoveContainersSettingsImpl extends FilteredListSettingsImpl implements RemoveContainersSettings {
 
-        protected RemoveContainersSettingsImpl(final RemoveContainersSettings.Builder builder) {
+        protected RemoveContainersSettingsImpl(final RemoveContainersSettingsBuilder builder) {
             super(builder);
         }
     }

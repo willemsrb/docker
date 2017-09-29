@@ -14,18 +14,18 @@ public interface RemoveNetworkSettings extends DockerSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static RemoveNetworkSettingsBuilder builder() {
+        return new RemoveNetworkSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    final class Builder extends DockerSettings.Builder<Builder> {
+    final class RemoveNetworkSettingsBuilder extends DockerSettings.Builder<RemoveNetworkSettingsBuilder> {
 
         private String networkName;
 
-        protected Builder() {
+        protected RemoveNetworkSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -40,7 +40,7 @@ public interface RemoveNetworkSettings extends DockerSettings {
          * @param networkName network name
          * @return this builder
          */
-        public Builder setNetworkName(final String networkName) {
+        public RemoveNetworkSettingsBuilder setNetworkName(final String networkName) {
             this.networkName = networkName;
             return this;
         }
@@ -53,7 +53,7 @@ public interface RemoveNetworkSettings extends DockerSettings {
 
         private final String networkName;
 
-        protected RemoveNetworkSettingsImpl(final RemoveNetworkSettings.Builder builder) {
+        protected RemoveNetworkSettingsImpl(final RemoveNetworkSettingsBuilder builder) {
             super(builder);
             this.networkName = builder.networkName;
         }

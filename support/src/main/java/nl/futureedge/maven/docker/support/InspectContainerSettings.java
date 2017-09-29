@@ -35,8 +35,8 @@ public interface InspectContainerSettings extends DockerSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static InspectContainerSettingsBuilder builder() {
+        return new InspectContainerSettingsBuilder();
     }
 
     /**
@@ -46,7 +46,7 @@ public interface InspectContainerSettings extends DockerSettings {
      *     <li>Default projectProperties = {@link System#getProperties()}</li>
      * </ul>
      */
-    public final class Builder extends DockerSettings.Builder<Builder> {
+    public final class InspectContainerSettingsBuilder extends DockerSettings.Builder<InspectContainerSettingsBuilder> {
 
         private Properties projectProperties = System.getProperties();
         private String containerId;
@@ -54,7 +54,7 @@ public interface InspectContainerSettings extends DockerSettings {
         private String hostnameProperty;
         private Properties portProperties;
 
-        protected Builder() {
+        protected InspectContainerSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -69,7 +69,7 @@ public interface InspectContainerSettings extends DockerSettings {
          * @param projectProperties project properties
          * @return this builder
          */
-        public Builder setProjectProperties(final Properties projectProperties) {
+        public InspectContainerSettingsBuilder setProjectProperties(final Properties projectProperties) {
             this.projectProperties = projectProperties;
             return this;
         }
@@ -79,7 +79,7 @@ public interface InspectContainerSettings extends DockerSettings {
          * @param containerId container id
          * @return this builder
          */
-        public Builder setContainerId(final String containerId) {
+        public InspectContainerSettingsBuilder setContainerId(final String containerId) {
             this.containerId = containerId;
             return this;
         }
@@ -89,7 +89,7 @@ public interface InspectContainerSettings extends DockerSettings {
          * @param containerNameProperty property to store container name
          * @return this builder
          */
-        public Builder setContainerNameProperty(final String containerNameProperty) {
+        public InspectContainerSettingsBuilder setContainerNameProperty(final String containerNameProperty) {
             this.containerNameProperty = containerNameProperty;
             return this;
         }
@@ -99,7 +99,7 @@ public interface InspectContainerSettings extends DockerSettings {
          * @param hostnameProperty property to store host name
          * @return this builder
          */
-        public Builder setHostnameProperty(final String hostnameProperty) {
+        public InspectContainerSettingsBuilder setHostnameProperty(final String hostnameProperty) {
             this.hostnameProperty = hostnameProperty;
             return this;
         }
@@ -109,7 +109,7 @@ public interface InspectContainerSettings extends DockerSettings {
          * @param portProperties port properties
          * @return this builder
          */
-        public Builder setPortProperties(final Properties portProperties) {
+        public InspectContainerSettingsBuilder setPortProperties(final Properties portProperties) {
             this.portProperties = portProperties;
             return this;
         }
@@ -126,7 +126,7 @@ public interface InspectContainerSettings extends DockerSettings {
         private final String hostnameProperty;
         private final Properties portProperties;
 
-        protected InspectContainerSettingsImpl(final InspectContainerSettings.Builder builder) {
+        protected InspectContainerSettingsImpl(final InspectContainerSettingsBuilder builder) {
             super(builder);
             this.projectProperties = builder.projectProperties;
             this.containerId = builder.containerId;

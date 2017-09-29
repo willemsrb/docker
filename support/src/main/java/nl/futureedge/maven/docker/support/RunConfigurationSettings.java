@@ -1,9 +1,10 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Stack;
 
 /**
  * Settings.
@@ -13,8 +14,8 @@ public interface RunConfigurationSettings extends DockerSettings {
     /**
      * @return stack to 'store' dependencies
      */
-    default Stack<String> getStack() {
-        return new Stack<>();
+    default Deque<String> getStack() {
+        return new ArrayDeque<>();
     }
 
     /**
@@ -62,23 +63,23 @@ public interface RunConfigurationSettings extends DockerSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static RunConfigurationSettingsBuilder builder() {
+        return new RunConfigurationSettingsBuilder();
     }
 
     /**
      * Builder.
      *
      * <ul>
-     *     <li>Default stack = empty stack</li>
+     *     <li>Default stack = empty deque</li>
      *     <li>Default loaded = empty list</li>
      *     <li>Default projectProperties = {@link System#getProperties()}</li>
      *     <li>Default randomPorts = false</li>
      *     <li>Default skipDependencies = false</li>
      * </ul>
      */
-    final class Builder extends DockerSettings.Builder<Builder> {
-        private Stack stack = new Stack();
+    final class RunConfigurationSettingsBuilder extends DockerSettings.Builder<RunConfigurationSettingsBuilder> {
+        private Deque stack = new ArrayDeque();
         private Set<String> loaded = new HashSet<>();
         private Properties projectProperties = System.getProperties();
         private String configurationName;
@@ -88,7 +89,7 @@ public interface RunConfigurationSettings extends DockerSettings {
         private boolean randomPorts = false;
         private boolean skipDependencies = false;
 
-        protected Builder() {
+        protected RunConfigurationSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -103,7 +104,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * @param stack stack
          * @return this builder
          */
-        public Builder setStack(final Stack stack) {
+        public RunConfigurationSettingsBuilder setStack(final Deque stack) {
             this.stack = stack;
             return this;
         }
@@ -113,7 +114,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * @param loaded list of previously loaded configurations
          * @return this builder
          */
-        public Builder setLoaded(final Set<String> loaded) {
+        public RunConfigurationSettingsBuilder setLoaded(final Set<String> loaded) {
             this.loaded = loaded;
             return this;
         }
@@ -123,7 +124,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * @param projectProperties project properties
          * @return this builder
          */
-        public Builder setProjectProperties(final Properties projectProperties) {
+        public RunConfigurationSettingsBuilder setProjectProperties(final Properties projectProperties) {
             this.projectProperties = projectProperties;
             return this;
         }
@@ -133,7 +134,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * @param configurationName configuration name
          * @return this builder
          */
-        public Builder setConfigurationName(final String configurationName) {
+        public RunConfigurationSettingsBuilder setConfigurationName(final String configurationName) {
             this.configurationName = configurationName;
             return this;
         }
@@ -143,7 +144,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * @param additionalRunOptions additional run options
          * @return this builder
          */
-        public Builder setAdditionalRunOptions(final String additionalRunOptions) {
+        public RunConfigurationSettingsBuilder setAdditionalRunOptions(final String additionalRunOptions) {
             this.additionalRunOptions = additionalRunOptions;
             return this;
         }
@@ -153,7 +154,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * @param command command
          * @return this builder
          */
-        public Builder setCommand(final String command) {
+        public RunConfigurationSettingsBuilder setCommand(final String command) {
             this.command = command;
             return this;
         }
@@ -163,7 +164,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * @param networkName network name
          * @return this builder
          */
-        public Builder setNetworkName(final String networkName) {
+        public RunConfigurationSettingsBuilder setNetworkName(final String networkName) {
             this.networkName = networkName;
             return this;
         }
@@ -172,7 +173,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * Set if all ports should be mapped to random ports (overrides external ports in loaded configuration and dependencies)?
          * @param randomPorts true, if all ports should be mapped to random ports
          */
-        public Builder setRandomPorts(final boolean randomPorts) {
+        public RunConfigurationSettingsBuilder setRandomPorts(final boolean randomPorts) {
             this.randomPorts = randomPorts;
             return this;
         }
@@ -181,7 +182,7 @@ public interface RunConfigurationSettings extends DockerSettings {
          * Sets if dependencies should be skipped?
          * @param skipDependencies true, if dependencies should be skipped
          */
-        public Builder setSkipDependencies(final boolean skipDependencies) {
+        public RunConfigurationSettingsBuilder setSkipDependencies(final boolean skipDependencies) {
             this.skipDependencies = skipDependencies;
             return this;
         }
@@ -192,7 +193,7 @@ public interface RunConfigurationSettings extends DockerSettings {
      */
     final class RunConfigurationSettingsImpl extends DockerSettingsImpl implements RunConfigurationSettings {
 
-        private final Stack stack;
+        private final Deque stack;
         private final Set<String> loaded;
         private final Properties projectProperties;
         private final String configurationName;
@@ -202,7 +203,7 @@ public interface RunConfigurationSettings extends DockerSettings {
         private final boolean randomPorts;
         private final boolean skipDependencies;
 
-        protected RunConfigurationSettingsImpl(final RunConfigurationSettings.Builder builder) {
+        protected RunConfigurationSettingsImpl(final RunConfigurationSettingsBuilder builder) {
             super(builder);
             this.stack = builder.stack;
             this.loaded = builder.loaded;
@@ -216,7 +217,7 @@ public interface RunConfigurationSettings extends DockerSettings {
         }
 
         @Override
-        public Stack getStack() {
+        public Deque getStack() {
             return stack;
         }
 

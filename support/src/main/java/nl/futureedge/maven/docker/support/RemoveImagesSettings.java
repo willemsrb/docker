@@ -8,16 +8,16 @@ public interface RemoveImagesSettings extends FilteredListSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static RemoveImagesSettingsBuilder builder() {
+        return new RemoveImagesSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    final class Builder extends FilteredListSettings.Builder<Builder> {
+    final class RemoveImagesSettingsBuilder extends FilteredListSettings.Builder<RemoveImagesSettingsBuilder> {
 
-        protected Builder() {
+        protected RemoveImagesSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -33,7 +33,7 @@ public interface RemoveImagesSettings extends FilteredListSettings {
      */
     final class RemoveImagesSettingsImpl extends FilteredListSettingsImpl implements RemoveImagesSettings {
 
-        protected RemoveImagesSettingsImpl(final RemoveImagesSettings.Builder builder) {
+        protected RemoveImagesSettingsImpl(final RemoveImagesSettingsBuilder builder) {
             super(builder);
         }
     }

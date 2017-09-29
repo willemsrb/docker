@@ -13,18 +13,18 @@ public interface CommandSettings extends DockerSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static CommandSettingsBuilder builder() {
+        return new CommandSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    public final class Builder extends DockerSettings.Builder<CommandSettings.Builder> {
+    public final class CommandSettingsBuilder extends DockerSettings.Builder<CommandSettingsBuilder> {
 
         private String command;
 
-        protected Builder() {
+        protected CommandSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -39,7 +39,7 @@ public interface CommandSettings extends DockerSettings {
          * @param command command
          * @return this builder
          */
-        public Builder setCommand(final String command) {
+        public CommandSettingsBuilder setCommand(final String command) {
             this.command = command;
             return this;
         }
@@ -52,7 +52,7 @@ public interface CommandSettings extends DockerSettings {
 
         private final String command;
 
-        protected CommandSettingsImpl(final CommandSettings.Builder builder) {
+        protected CommandSettingsImpl(final CommandSettingsBuilder builder) {
             super(builder);
             this.command = builder.command;
         }

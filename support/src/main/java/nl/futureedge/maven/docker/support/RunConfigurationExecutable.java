@@ -1,11 +1,11 @@
 package nl.futureedge.maven.docker.support;
 
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 import nl.futureedge.maven.docker.configuration.Configuration;
 import nl.futureedge.maven.docker.configuration.ConfigurationLoader;
@@ -21,7 +21,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
 
     private final RunConfigurationSettings settings;
     private Set<String> loaded;
-    private Stack<String> stack;
+    private Deque<String> stack;
     private final String configurationName;
     private final boolean skipDependencies;
 

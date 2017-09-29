@@ -21,6 +21,10 @@ public class ConfigurationLoader {
 
     private static final Gson GSON = new GsonBuilder().create();
 
+    private ConfigurationLoader() {
+        // Not instantiated
+    }
+
     /**
      * Loads a configuration from the {@link #RESOURCE_BASE} with the given name (suffix with .json).
      * @param configurationName configuration name

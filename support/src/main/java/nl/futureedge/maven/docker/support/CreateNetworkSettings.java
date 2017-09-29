@@ -18,19 +18,19 @@ public interface CreateNetworkSettings extends DockerSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static CreateNetworkBuilder builder() {
+        return new CreateNetworkBuilder();
     }
 
     /**
      * Builder.
      */
-    public final class Builder extends DockerSettings.Builder<Builder> {
+    public final class CreateNetworkBuilder extends DockerSettings.Builder<CreateNetworkBuilder> {
 
         private String networkOptions;
         private String networkName;
 
-        protected Builder() {
+        protected CreateNetworkBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -48,7 +48,7 @@ public interface CreateNetworkSettings extends DockerSettings {
          * @param networkOptions network options
          * @return this builder
          */
-        public Builder setNetworkOptions(final String networkOptions) {
+        public CreateNetworkBuilder setNetworkOptions(final String networkOptions) {
             this.networkOptions = networkOptions;
             return this;
         }
@@ -58,7 +58,7 @@ public interface CreateNetworkSettings extends DockerSettings {
          * @param networkName network name
          * @return this builder
          */
-        public Builder setNetworkName(final String networkName) {
+        public CreateNetworkBuilder setNetworkName(final String networkName) {
             this.networkName = networkName;
             return this;
         }
@@ -72,7 +72,7 @@ public interface CreateNetworkSettings extends DockerSettings {
         private final String networkOptions;
         private final String networkName;
 
-        protected CreateNetworkSettingsImpl(final CreateNetworkSettings.Builder builder) {
+        protected CreateNetworkSettingsImpl(final CreateNetworkBuilder builder) {
             super(builder);
             this.networkOptions = builder.networkOptions;
             this.networkName = builder.networkName;

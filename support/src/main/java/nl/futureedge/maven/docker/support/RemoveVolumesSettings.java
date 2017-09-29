@@ -8,15 +8,15 @@ public interface RemoveVolumesSettings extends FilteredListSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static RemoveVolumesSettingsBuilder builder() {
+        return new RemoveVolumesSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    public final class Builder extends FilteredListSettings.Builder<Builder> {
-        protected Builder() {
+    public final class RemoveVolumesSettingsBuilder extends FilteredListSettings.Builder<RemoveVolumesSettingsBuilder> {
+        protected RemoveVolumesSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -32,7 +32,7 @@ public interface RemoveVolumesSettings extends FilteredListSettings {
      */
     final class RemoveVolumesSettingsImpl extends FilteredListSettingsImpl implements RemoveVolumesSettings {
 
-        protected RemoveVolumesSettingsImpl(final RemoveVolumesSettings.Builder builder) {
+        protected RemoveVolumesSettingsImpl(final RemoveVolumesSettingsBuilder builder) {
             super(builder);
         }
     }

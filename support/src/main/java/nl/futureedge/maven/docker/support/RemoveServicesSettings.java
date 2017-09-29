@@ -8,15 +8,15 @@ public interface RemoveServicesSettings extends FilteredListSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static RemoveServicesSettingsBuilder builder() {
+        return new RemoveServicesSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    public final class Builder extends FilteredListSettings.Builder<Builder> {
-        protected Builder() {
+    public final class RemoveServicesSettingsBuilder extends FilteredListSettings.Builder<RemoveServicesSettingsBuilder> {
+        protected RemoveServicesSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -31,7 +31,7 @@ public interface RemoveServicesSettings extends FilteredListSettings {
      * Settings implementation.
      */
     final class RemoveServicesSettingsImpl extends FilteredListSettingsImpl implements RemoveServicesSettings {
-        protected RemoveServicesSettingsImpl(final RemoveServicesSettings.Builder builder) {
+        protected RemoveServicesSettingsImpl(final RemoveServicesSettingsBuilder builder) {
             super(builder);
         }
     }

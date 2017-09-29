@@ -8,16 +8,16 @@ public interface StopContainersSettings extends FilteredListSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static StopContainersSettingsBuilder builder() {
+        return new StopContainersSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    final class Builder extends FilteredListSettings.Builder<Builder> {
+    final class StopContainersSettingsBuilder extends FilteredListSettings.Builder<StopContainersSettingsBuilder> {
 
-        protected Builder() {
+        protected StopContainersSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -33,7 +33,7 @@ public interface StopContainersSettings extends FilteredListSettings {
      */
     final class StopContainersSettingsImpl extends FilteredListSettingsImpl implements StopContainersSettings {
 
-        protected StopContainersSettingsImpl(final StopContainersSettings.Builder builder) {
+        protected StopContainersSettingsImpl(final StopContainersSettingsBuilder builder) {
             super(builder);
         }
     }

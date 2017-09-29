@@ -8,16 +8,16 @@ public interface StartContainersSettings extends FilteredListSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static StartContainersSettingsBuilder builder() {
+        return new StartContainersSettingsBuilder();
     }
 
     /**
      * Builder.
      */
-    final class Builder extends FilteredListSettings.Builder<Builder> {
+    final class StartContainersSettingsBuilder extends FilteredListSettings.Builder<StartContainersSettingsBuilder> {
 
-        protected Builder() {
+        protected StartContainersSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -33,7 +33,7 @@ public interface StartContainersSettings extends FilteredListSettings {
      */
     final class StartContainersSettingsImpl extends FilteredListSettingsImpl implements StartContainersSettings {
 
-        protected StartContainersSettingsImpl(final StartContainersSettings.Builder builder) {
+        protected StartContainersSettingsImpl(final StartContainersSettingsBuilder builder) {
             super(builder);
         }
     }

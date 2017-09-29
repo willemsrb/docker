@@ -15,6 +15,10 @@ public final class Docker {
     private static final String ALL_WHITESPACE = "\\s+";
     private static final String SINGLE_SPACE = " ";
 
+    private Docker() {
+        // Not instantiated
+    }
+
     /**
      * Get the image composed of the given components.
      * @param registry registry (can be empty or null)

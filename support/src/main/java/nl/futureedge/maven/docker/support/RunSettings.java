@@ -40,8 +40,8 @@ public interface RunSettings extends DockerSettings {
     /**
      * @return builder
      */
-    static Builder builder() {
-        return new Builder();
+    static RunSettingsBuilder builder() {
+        return new RunSettingsBuilder();
     }
 
     /**
@@ -52,7 +52,7 @@ public interface RunSettings extends DockerSettings {
      *     <li>Default daemon = true</li>
      * </ul>
      */
-    final class Builder extends DockerSettings.Builder<Builder> {
+    final class RunSettingsBuilder extends DockerSettings.Builder<RunSettingsBuilder> {
 
         private Properties projectProperties = System.getProperties();
         private String runOptions;
@@ -61,7 +61,7 @@ public interface RunSettings extends DockerSettings {
         private String command;
         private String containerIdProperty;
 
-        protected Builder() {
+        protected RunSettingsBuilder() {
             super();
             super.setBuilder(this);
         }
@@ -76,7 +76,7 @@ public interface RunSettings extends DockerSettings {
          * @param projectProperties project properties
          * @return this builder
          */
-        public Builder setProjectProperties(final Properties projectProperties) {
+        public RunSettingsBuilder setProjectProperties(final Properties projectProperties) {
             this.projectProperties = projectProperties;
             return this;
         }
@@ -86,7 +86,7 @@ public interface RunSettings extends DockerSettings {
          * @param runOptions run options
          * @return this builder
          */
-        public Builder setRunOptions(final String runOptions) {
+        public RunSettingsBuilder setRunOptions(final String runOptions) {
             this.runOptions = runOptions;
             return this;
         }
@@ -96,7 +96,7 @@ public interface RunSettings extends DockerSettings {
          * @param daemon true, if this container should be run as a daemon
          * @return this builder
          */
-        public Builder setDaemon(final boolean daemon) {
+        public RunSettingsBuilder setDaemon(final boolean daemon) {
             this.daemon = daemon;
             return this;
         }
@@ -106,7 +106,7 @@ public interface RunSettings extends DockerSettings {
          * @param image image
          * @return this builder
          */
-        public Builder setImage(final String image) {
+        public RunSettingsBuilder setImage(final String image) {
             this.image = image;
             return this;
         }
@@ -116,7 +116,7 @@ public interface RunSettings extends DockerSettings {
          * @param command command
          * @return this builder
          */
-        public Builder setCommand(final String command) {
+        public RunSettingsBuilder setCommand(final String command) {
             this.command = command;
             return this;
         }
@@ -126,7 +126,7 @@ public interface RunSettings extends DockerSettings {
          * @param containerIdProperty property to store container id
          * @return this builder
          */
-        public Builder setContainerIdProperty(final String containerIdProperty) {
+        public RunSettingsBuilder setContainerIdProperty(final String containerIdProperty) {
             this.containerIdProperty = containerIdProperty;
             return this;
         }
@@ -144,7 +144,7 @@ public interface RunSettings extends DockerSettings {
         private final String command;
         private final String containerIdProperty;
 
-        protected RunSettingsImpl(final RunSettings.Builder builder) {
+        protected RunSettingsImpl(final RunSettingsBuilder builder) {
             super(builder);
             this.projectProperties = builder.projectProperties;
             this.runOptions = builder.runOptions;
