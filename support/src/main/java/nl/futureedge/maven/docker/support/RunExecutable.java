@@ -1,10 +1,10 @@
 package nl.futureedge.maven.docker.support;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -94,8 +94,6 @@ public final class RunExecutable extends DockerExecutable {
             arguments.addAll(Docker.splitOptions(command));
         }
 
-        System.out.println(arguments);
-
         // execute
         final List<String> executionResult = executor.execute(arguments, false, true);
 
@@ -115,12 +113,13 @@ public final class RunExecutable extends DockerExecutable {
         arguments.addAll(Docker.splitOptions(runOptions));
 
         // add cidfile to run options
-        File cidFile = null;
+        Path cidFile = null;
         try {
-            cidFile = Files.createTempFile("docker-maven-plugin", "cidfile").toFile();
-            cidFile.delete();
+            cidFile = Files.createTempFile("docker-maven-plugin", "cidfile");
+            Files.delete(cidFile);
+
             arguments.add("--cidfile");
-            arguments.add(cidFile.getAbsolutePath());
+            arguments.add(cidFile.toFile().getAbsolutePath());
 
             // image
             arguments.add(image);
@@ -134,14 +133,18 @@ public final class RunExecutable extends DockerExecutable {
             executor.execute(arguments, true, false);
 
             // read container id from cidfile
-            try (final BufferedReader reader = new BufferedReader(new FileReader(cidFile))) {
+            try (final BufferedReader reader = new BufferedReader(new FileReader(cidFile.toFile()))) {
                 return reader.readLine();
             }
         } catch (IOException e) {
             throw new DockerExecutionException("Could not read cidfile", e);
         } finally {
-            if (cidFile != null && cidFile.exists()) {
-                cidFile.delete();
+            if (cidFile != null) {
+                try {
+                    Files.delete(cidFile);
+                } catch (final IOException e) {
+                    // Ignore
+                }
             }
         }
     }
