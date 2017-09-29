@@ -15,7 +15,7 @@ public interface RemoveServicesSettings extends FilteredListSettings {
     /**
      * Builder.
      */
-    public final class RemoveServicesSettingsBuilder extends FilteredListSettings.Builder<RemoveServicesSettingsBuilder> {
+    public final class RemoveServicesSettingsBuilder extends FilteredListSettingsBuilder<RemoveServicesSettingsBuilder> {
         protected RemoveServicesSettingsBuilder() {
             super();
             super.setBuilder(this);

@@ -16,7 +16,7 @@ public interface RemoveContainersSettings extends FilteredListSettings {
     /**
      * Builder.
      */
-    final class RemoveContainersSettingsBuilder extends FilteredListSettings.Builder<RemoveContainersSettingsBuilder> {
+    final class RemoveContainersSettingsBuilder extends FilteredListSettingsBuilder<RemoveContainersSettingsBuilder> {
 
         protected RemoveContainersSettingsBuilder() {
             super();

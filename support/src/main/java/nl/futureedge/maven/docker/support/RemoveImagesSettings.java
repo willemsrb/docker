@@ -15,7 +15,7 @@ public interface RemoveImagesSettings extends FilteredListSettings {
     /**
      * Builder.
      */
-    final class RemoveImagesSettingsBuilder extends FilteredListSettings.Builder<RemoveImagesSettingsBuilder> {
+    final class RemoveImagesSettingsBuilder extends FilteredListSettingsBuilder<RemoveImagesSettingsBuilder> {
 
         protected RemoveImagesSettingsBuilder() {
             super();

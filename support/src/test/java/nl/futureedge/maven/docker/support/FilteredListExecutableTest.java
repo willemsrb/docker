@@ -99,7 +99,7 @@ public class FilteredListExecutableTest {
             return new Builder();
         }
 
-        final class Builder extends FilteredListSettings.Builder<Builder> {
+        final class Builder extends FilteredListSettingsBuilder<Builder> {
 
             protected Builder() {
                 super();

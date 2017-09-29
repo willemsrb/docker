@@ -15,7 +15,7 @@ public interface StartContainersSettings extends FilteredListSettings {
     /**
      * Builder.
      */
-    final class StartContainersSettingsBuilder extends FilteredListSettings.Builder<StartContainersSettingsBuilder> {
+    final class StartContainersSettingsBuilder extends FilteredListSettingsBuilder<StartContainersSettingsBuilder> {
 
         protected StartContainersSettingsBuilder() {
             super();

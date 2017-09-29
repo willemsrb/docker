@@ -15,7 +15,7 @@ public interface RemoveVolumesSettings extends FilteredListSettings {
     /**
      * Builder.
      */
-    public final class RemoveVolumesSettingsBuilder extends FilteredListSettings.Builder<RemoveVolumesSettingsBuilder> {
+    public final class RemoveVolumesSettingsBuilder extends FilteredListSettingsBuilder<RemoveVolumesSettingsBuilder> {
         protected RemoveVolumesSettingsBuilder() {
             super();
             super.setBuilder(this);

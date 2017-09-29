@@ -15,7 +15,7 @@ public interface StopContainersSettings extends FilteredListSettings {
     /**
      * Builder.
      */
-    final class StopContainersSettingsBuilder extends FilteredListSettings.Builder<StopContainersSettingsBuilder> {
+    final class StopContainersSettingsBuilder extends FilteredListSettingsBuilder<StopContainersSettingsBuilder> {
 
         protected StopContainersSettingsBuilder() {
             super();
