@@ -43,7 +43,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
     public void execute() throws DockerException {
         // Check already loaded
         if (loaded.contains(configurationName)) {
-            debug("Skipping previously loaded configuration: " + configurationName);
+            debug(String.format("Skipping previously loaded configuration: %s", configurationName));
             return;
         }
 
@@ -55,7 +55,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
         stack.push(configurationName);
 
         // Load configuration
-        debug("Loading configuration: " + configurationName);
+        debug(String.format("Loading configuration: %s", configurationName));
         Configuration configuration = ConfigurationLoader.loadConfiguration(configurationName);
 
         // Recursive run 'dependsOn' configurations
@@ -64,7 +64,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
         } else {
             if (configuration.getDependsOn() != null && !configuration.getDependsOn().isEmpty()) {
                 for (final String dependsOn : configuration.getDependsOn()) {
-                    debug("Dependent configuration: " + dependsOn);
+                    debug(String.format("Dependent configuration: %s", dependsOn));
                     final RunConfigurationSettings runConfigurationSettings = RunConfigurationSettings.builder()
                             .setDebugLogger(settings.getDebugLogger())
                             .setInfoLogger(settings.getInfoLogger())
@@ -88,7 +88,7 @@ public class RunConfigurationExecutable extends DockerExecutable {
 
         // Run this configuration
         if (configuration.getImageName() != null && !"".equals(configuration.getImageName())) {
-            info("Running configuration: " + configurationName);
+            info(String.format("Running configuration: %s", configurationName));
             final RunSettings runSettings = RunSettings.builder()
                     .setDebugLogger(settings.getDebugLogger())
                     .setInfoLogger(settings.getInfoLogger())

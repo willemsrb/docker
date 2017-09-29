@@ -36,7 +36,7 @@ public final class RemoveImagesExecutable extends FilteredListExecutable {
 
     @Override
     protected void execute(final DockerExecutor executor, final String image) throws DockerExecutionException {
-        info("Remove image: " + image);
+        info(String.format("Remove image: %s", image));
 
         final List<String> arguments = new ArrayList<>();
         arguments.add("rmi");

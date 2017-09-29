@@ -63,18 +63,13 @@ public interface DockerSettings {
     /**
      * Builder.
      *
-     * <ul>
-     * <li>Default debuglogger = {@link #defaultDebug(String)}</li>
-     * <li>Default infoLogger = {@link #defaultInfo(String)}</li>
-     * <li>Default warnLogger = {@link #defaultWarn(String, Exception)}</li>
-     * <li>Default ignoreFailures = false</li>
-     * </ul>
-     *
+     * <ul> <li>Default debuglogger = {@link #defaultDebug(String)}</li> <li>Default infoLogger = {@link #defaultInfo(String)}</li> <li>Default warnLogger =
+     * {@link #defaultWarn(String, Exception)}</li> <li>Default ignoreFailures = false</li> </ul>
      * @param <T> builder type
      */
     public abstract class Builder<T extends Builder> {
 
-        private T builder;
+        private T thisBuilder;
 
         private Consumer<String> debugLogger = DockerSettings::defaultDebug;
         private Consumer<String> infoLogger = DockerSettings::defaultInfo;
@@ -90,14 +85,14 @@ public interface DockerSettings {
          * @param builder 'this' builder
          */
         protected final void setBuilder(final T builder) {
-            this.builder = builder;
+            this.thisBuilder = builder;
         }
 
         /**
          * @return 'this' builder
          */
         protected final T getBuilder() {
-            return builder;
+            return thisBuilder;
         }
 
         /**
@@ -113,7 +108,7 @@ public interface DockerSettings {
          */
         public final T setDebugLogger(final Consumer<String> debugLogger) {
             this.debugLogger = debugLogger;
-            return builder;
+            return thisBuilder;
         }
 
         /**
@@ -123,7 +118,7 @@ public interface DockerSettings {
          */
         public final T setInfoLogger(final Consumer<String> infoLogger) {
             this.infoLogger = infoLogger;
-            return builder;
+            return thisBuilder;
         }
 
         /**
@@ -133,7 +128,7 @@ public interface DockerSettings {
          */
         public final T setWarnLogger(final BiConsumer<String, Exception> warnLogger) {
             this.warnLogger = warnLogger;
-            return builder;
+            return thisBuilder;
         }
 
         /**
@@ -143,7 +138,7 @@ public interface DockerSettings {
          */
         public final T setDockerOptions(final String dockerOptions) {
             this.dockerOptions = dockerOptions;
-            return builder;
+            return thisBuilder;
         }
 
         /**
@@ -153,7 +148,7 @@ public interface DockerSettings {
          */
         public final T setIgnoreFailures(final boolean ignoreFailures) {
             this.ignoreFailures = ignoreFailures;
-            return builder;
+            return thisBuilder;
         }
     }
 

@@ -65,7 +65,7 @@ public final class InspectContainerExecutable extends DockerExecutable {
         if (containerName.startsWith("/")) {
             containerName = containerName.substring(1);
         }
-        info("Name: " + containerName);
+        info(String.format("Name: %s", containerName));
         projectProperties.setProperty(containerNameProperty, containerName);
     }
 
@@ -86,7 +86,7 @@ public final class InspectContainerExecutable extends DockerExecutable {
             return;
         }
 
-        info("Hostname: " + hostname.getAsString());
+        info(String.format("Hostname: %s", hostname.getAsString()));
         projectProperties.setProperty(hostnameProperty, hostname.getAsString());
     }
 
@@ -111,18 +111,18 @@ public final class InspectContainerExecutable extends DockerExecutable {
         for (final String portPropertyKey : portProperties.stringPropertyNames()) {
             final JsonArray mappings = ports.getAsJsonArray(portPropertyKey);
             if (mappings == null || mappings.size() == 0) {
-                warn("Port " + portPropertyKey + ": not mapped");
+                warn(String.format("Port %s: not mapped", portPropertyKey));
             } else {
                 if (mappings.size() > 1) {
-                    warn("Port " + portPropertyKey + " is mapped multiple times; an undetermined mapping wil be returned");
+                    warn(String.format("Port %s: mapped multiple times; an undetermined mapping wil be returned", portPropertyKey));
                 }
                 final JsonObject mapping = mappings.get(0).getAsJsonObject();
                 final JsonPrimitive port = mapping.getAsJsonPrimitive("HostPort");
-                if(port == null) {
-                    warn("Port: HostPort primitive not found");
+                if (port == null) {
+                    warn(String.format("Port %s: HostPort primitive not found", portPropertyKey));
                     continue;
                 }
-                info("Port " + portPropertyKey + ": " + port.getAsString());
+                info(String.format("Port %s: %s", portPropertyKey, port.getAsString()));
                 projectProperties.setProperty(portProperties.getProperty(portPropertyKey), port.getAsString());
             }
         }

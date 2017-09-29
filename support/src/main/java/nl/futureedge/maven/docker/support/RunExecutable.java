@@ -67,7 +67,7 @@ public final class RunExecutable extends DockerExecutable {
         } else {
             containerId = doIgnoringFailure(() -> executeContainer(executor, runOptions, image, command));
         }
-        info("ContainerId: " + containerId);
+        info(String.format("Container id: %s", containerId));
 
         // Set property in maven
         if (containerIdProperty != null && !"".equals(containerIdProperty.trim())) {

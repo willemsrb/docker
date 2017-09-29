@@ -37,7 +37,7 @@ public final class RemoveServicesExecutable extends FilteredListExecutable {
 
     @Override
     protected void execute(final DockerExecutor executor, final String service) throws DockerExecutionException {
-        info("Remove service: " + service);
+        info(String.format("Remove service: %s", service));
 
         final List<String> arguments = new ArrayList<>();
         arguments.add("service");

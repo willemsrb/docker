@@ -19,7 +19,7 @@ public final class StartContainersExecutable extends FilteredListExecutable {
     }
 
     @Override
-    protected List<String> list(final DockerExecutor executor, final  String filter) throws DockerExecutionException {
+    protected List<String> list(final DockerExecutor executor, final String filter) throws DockerExecutionException {
         debug("Start containers configuration: ");
         debug("- filter: " + filter);
 
@@ -28,7 +28,7 @@ public final class StartContainersExecutable extends FilteredListExecutable {
 
     @Override
     protected void execute(final DockerExecutor executor, final String container) throws DockerExecutionException {
-        info("Start container: " + container);
+        info(String.format("Start container: %s", container));
 
         final List<String> arguments = new ArrayList<>();
         arguments.add("start");

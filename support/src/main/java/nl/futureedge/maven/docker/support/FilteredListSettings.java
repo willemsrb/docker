@@ -13,11 +13,11 @@ public interface FilteredListSettings extends DockerSettings {
     /**
      * Builder.
      */
-    public abstract class Builder<T extends Builder> extends DockerSettings.Builder<T> {
+    public abstract class FilteredListSettingsBuilder<T extends FilteredListSettingsBuilder> extends DockerSettings.Builder<T> {
 
         private String filter;
 
-        protected Builder() {
+        protected FilteredListSettingsBuilder() {
             super();
         }
 
@@ -39,7 +39,7 @@ public interface FilteredListSettings extends DockerSettings {
 
         private final String filter;
 
-        protected FilteredListSettingsImpl(final FilteredListSettings.Builder builder) {
+        protected FilteredListSettingsImpl(final FilteredListSettingsBuilder builder) {
             super(builder);
             this.filter = builder.filter;
         }

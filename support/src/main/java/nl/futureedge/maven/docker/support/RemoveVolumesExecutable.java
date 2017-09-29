@@ -37,7 +37,7 @@ public final class RemoveVolumesExecutable extends FilteredListExecutable {
 
     @Override
     protected void execute(final DockerExecutor executor, final String volume) throws DockerExecutionException {
-        info("Remove volume: " + volume);
+        info(String.format("Remove volume: %s", volume));
 
         final List<String> arguments = new ArrayList<>();
         arguments.add("volume");

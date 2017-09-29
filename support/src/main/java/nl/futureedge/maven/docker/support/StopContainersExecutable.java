@@ -28,7 +28,7 @@ public final class StopContainersExecutable extends FilteredListExecutable {
 
     @Override
     protected void execute(final DockerExecutor executor, final String container) throws DockerExecutionException {
-        info("Stop container: " + container);
+        info(String.format("Stop container: %s", container));
 
         final List<String> arguments = new ArrayList<>();
         arguments.add("stop");

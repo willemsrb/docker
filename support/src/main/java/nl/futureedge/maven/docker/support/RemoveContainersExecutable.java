@@ -50,7 +50,7 @@ public final class RemoveContainersExecutable extends FilteredListExecutable {
 
     @Override
     protected void execute(final DockerExecutor executor, final String container) throws DockerExecutionException {
-        info("Remove container: " + container);
+        info(String.format("Remove container: %s", container));
 
         final List<String> arguments = new ArrayList<>();
         arguments.add("rm");
